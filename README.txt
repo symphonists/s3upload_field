@@ -1,7 +1,7 @@
 Field: Amazon S3 File Upload
 -------------------------------------------------------------------------------
 
-Version: 1.0 alpha --- Is it not ready to use. Need to apply Amazon S3 class by 
+Version: 1.0 alpha --- THIS IS NOT READ TO USE. Need to apply Amazon S3 class 
 Author: Brian Zerangue
 Build Date: 2010-03-29
 Requirements: Symphony 2.0.6
@@ -37,5 +37,5 @@ Symphony versions which has been moved to the Symphony updater script.)
 
 [Changes]
 
-1.0
-- Initial release
+1.0 alpha
+- Initial release - posting code to work off of base. Need to integrate Amazon S3 class now.

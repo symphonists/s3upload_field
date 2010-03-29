@@ -10,7 +10,7 @@ Requirements: Symphony 2.0.6
 
 [Origin]
 
-This extension is a variation of the 'Amazon S3 File Upload Field' extension by 
+This extension is a variation of the 'Unique File Upload Field' extension by 
 Michael Eichelsdoerfer and the Akismet extension (for System Preferences) by 
 Alistair Kerney. It uses the Amazon S3 PHP class written by Donovan Schonknecht, http://undesigned.org.za/2007/10/22/amazon-s3-php-class.
 

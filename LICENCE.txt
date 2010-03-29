@@ -1,10 +1,10 @@
-All source code included in the "Field: Unique File Upload" Symphony
+All source code included in the "Field: Amazon S3 File Upload" Symphony
 Extension archive is, unless otherwise specified, released under the MIT
 licence as follows:
 
 ----- begin license block -----
 
-Copyright 2008-2009 Rowan Lewis, Michael Eichelsdoerfer
+Copyright 2008-2010 Rowan Lewis, Alistair Kearney, Michael Eichelsdoerfer, Brian Zerangue, Will Nielsen
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

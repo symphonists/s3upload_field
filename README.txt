@@ -1,7 +1,7 @@
 Field: Amazon S3 File Upload
 -------------------------------------------------------------------------------
 
-Version: 1.0
+Version: 1.0 alpha --- Is it not ready to use. Need to apply Amazon S3 class by 
 Author: Brian Zerangue
 Build Date: 2010-03-29
 Requirements: Symphony 2.0.6
@@ -11,7 +11,8 @@ Requirements: Symphony 2.0.6
 [Origin]
 
 This extension is a variation of the 'Amazon S3 File Upload Field' extension by 
-Michael Eichelsdoerfer.
+Michael Eichelsdoerfer and the Akismet extension (for System Preferences) by 
+Alistair Kerney. It uses the Amazon S3 PHP class written by Donovan Schonknecht, http://undesigned.org.za/2007/10/22/amazon-s3-php-class.
 
 [Installation]
 
@@ -22,6 +23,9 @@ Michael Eichelsdoerfer.
    the with-selected menu, then click Apply.
 
 3. You can now add the "Amazon S3 File Upload" field to your sections.
+
+[NOTE]
+
 
 [UPDATING]
 

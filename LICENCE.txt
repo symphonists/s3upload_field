@@ -4,7 +4,7 @@ licence as follows:
 
 ----- begin license block -----
 
-Copyright 2008-2010 Rowan Lewis, Alistair Kearney, Michael Eichelsdoerfer, Brian Zerangue, Will Nielsen
+Copyright 2008-2010 Rowan Lewis, Alistair Kearney, Michael Eichelsdoerfer, Brian Zerangue, Will Nielsen, and Donovan Schonknecht (PHP class)
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

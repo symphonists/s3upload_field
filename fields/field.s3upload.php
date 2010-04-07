@@ -3,6 +3,15 @@
 	if (!defined('__IN_SYMPHONY__')) die('<h2>Symphony Error</h2><p>You cannot directly access this file</p>');
 	
 	require_once(TOOLKIT . '/fields/field.upload.php');
+	
+	/*
+	  This code below is using michael-e's unique field upload as a guide. I just don't know where to go next.
+	  I'm trying to add change the destination field to point to my bucket which is selected in Symphony's system
+	  preferences where I have a field for Access Key, Secret Access Key, and Bucket.
+	
+	
+	  DON'T KNOW WHERE TO GO NEXT.
+	*/
 
 	class FieldS3Upload extends FieldUpload {
 		public function __construct(&$parent){

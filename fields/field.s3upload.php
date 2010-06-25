@@ -322,9 +322,3 @@ function commit(){
 
 	}
 	
-	
-
-		
-
-		
-		

@@ -8,7 +8,7 @@
 			return array(
 				'name'			=> 'Field: Amazon S3 File Upload',
 				'version'		=> '.5',
-				'release-date'	=> '2010-06-26',
+				'release-date'	=> '2010-06-24',
 				'author'		=> array(
 					'name'			=> 'Andrew Shooner and Brian Zerangue',
 					'website'		=> 'http://andrewshooner.com',

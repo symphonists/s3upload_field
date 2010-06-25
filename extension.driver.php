@@ -40,10 +40,6 @@
 					$label = Widget::Label('Secret Access Key');
 					$label->appendChild(Widget::Input('settings[s3upload_field][secret-access-key]', General::Sanitize($this->getAmazonS3SecretAccessKey())));		
 					$group->appendChild($label);
-					
-					$label = Widget::Label('Your Bucket');
-					$label->appendChild(Widget::Input('settings[s3upload_field][your-bucket]', General::Sanitize($this->getAmazonS3YourBucket())));		
-					$group->appendChild($label);
 
 					$group->appendChild(new XMLElement('p', 'Get a Access Key ID and Secret Access Key from the <a href="http://aws.amazon.com">Amazon Web Services site</a>.', array('class' => 'help')));
 
@@ -59,7 +55,7 @@
 			return $this->_Parent->Database->query("CREATE TABLE `tbl_fields_s3upload` (
 				`id` int(11) unsigned NOT NULL auto_increment,
 				`field_id` int(11) unsigned NOT NULL,
-				`destination` varchar(255) NOT NULL,
+				`bucket` varchar(255) NOT NULL,
 				`validator` varchar(50),
 				PRIMARY KEY (`id`),
 				KEY `field_id` (`field_id`))"
@@ -78,13 +74,6 @@
 						return ConfigurationAccessor::get('secret-access-key', 's3upload_field');
 
 					return $this->_Parent->Configuration->get('secret-access-key', 's3upload_field');
-				}
-				
-		public function getAmazonS3YourBucket(){
-					if(class_exists('ConfigurationAccessor'))
-						return ConfigurationAccessor::get('your-bucket', 's3upload_field');
-
-					return $this->_Parent->Configuration->get('your-bucket', 's3upload_field');
 				}
 				
 

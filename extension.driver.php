@@ -7,14 +7,14 @@
 		public function about() {
 			return array(
 				'name'			=> 'Field: Amazon S3 File Upload',
-				'version'		=> '1.0',
-				'release-date'	=> '2010-03-28',
+				'version'		=> '.5',
+				'release-date'	=> '2010-06-26',
 				'author'		=> array(
-					'name'			=> 'Brian Zerangue',
-					'website'		=> 'http://brianzerangue.com',
-					'email'			=> 'brian.zerangue@gmail.com'
+					'name'			=> 'Andrew Shooner and Brian Zerangue',
+					'website'		=> 'http://andrewshooner.com',
+					'email'			=> 'ashooner@gmail.com'
 				),
-				'description'	=> 'Upload files to Amazon S3.'
+				'description'	=> 'Upload files to Amazon S3. Based on Brian Zerangue\'s version, based on Michael E\'s upload field.'
 			);
 		}
 		

@@ -131,8 +131,7 @@
 			return array(
 				'file' => $file,
 				'size' => $data['size']
-				)
-			);
+				);
 			
 		}
 		
@@ -303,11 +302,13 @@ function checkPostFieldData($data, &$message, $entry_id=NULL){
 		}
 		
 
+/*
 function commit(){
-			
+			// if(!parent::commit()) return false;
+
 			$id = $this->get('id');
 
-			if($id === false) return false;
+			if($id === false){return false;}
 			
 			$fields = array();
 			
@@ -316,9 +317,65 @@ function commit(){
 			$fields['validator'] = ($fields['validator'] == 'custom' ? NULL : $this->get('validator'));
 			
 			Symphony::Database()->query("DELETE FROM `tbl_fields_".$this->handle()."` WHERE `field_id` = '$id' LIMIT 1");		
-			return Symphony::Database()->insert($fields, 'tbl_fields_' . $this->handle());
+			//return Symphony::Database()->insert($fields, 'tbl_fields_' . $this->handle());
+			Symphony::Database()->insert($fields, 'tbl_fields_' . $this->handle());
+			return true;
 					
 		}		
 
 	}
+*/
 	
+		function commit(){
+			
+			//if(!parent::commit()) return false;
+			$fields = array();
+
+			$fields['element_name'] = Lang::createHandle($this->get('label'));
+			if(is_numeric($fields['element_name']{0})) $fields['element_name'] = 'field-' . $fields['element_name'];
+			
+			$fields['label'] = $this->get('label');
+			$fields['parent_section'] = $this->get('parent_section');
+			$fields['location'] = $this->get('location');
+			$fields['required'] = $this->get('required');
+			$fields['type'] = $this->_handle;
+			$fields['show_column'] = $this->get('show_column');
+			$fields['sortorder'] = (string)$this->get('sortorder');
+			
+			
+			if($id = $this->get('id')){
+				//$this->_Parent->edit($id, $fields);	
+				$s3fields['field_id'] = $id;
+			$s3fields['bucket'] = $this->get('bucket');
+			$s3fields['validator'] = ($fields['validator'] == 'custom' ? NULL : $this->get('validator'));
+
+				Symphony::Database()->query("DELETE FROM `tbl_fields_".$this->handle()."` WHERE `field_id` = '$id' LIMIT 1");		
+				return Symphony::Database()->insert($s3fields, 'tbl_fields_' . $this->handle());
+			
+			}
+			
+			elseif($id = $this->_Parent->add($fields)){
+				$this->set('id', $id);
+				$this->createTable();
+				return true;
+			}
+			return false;
+		}	
+		
+			public function createTable(){
+			
+			return $this->Database->query(
+			
+				"CREATE TABLE IF NOT EXISTS `tbl_entries_data_" . $this->get('id') . "` (
+				  `id` int(11) unsigned NOT NULL auto_increment,
+				  `entry_id` int(11) unsigned NOT NULL,
+				  `value` varchar(255) default NULL,
+				  PRIMARY KEY  (`id`),
+				  KEY `entry_id` (`entry_id`),
+				  KEY `value` (`value`)
+				) TYPE=MyISAM;"
+			
+			);
+		}
+
+}

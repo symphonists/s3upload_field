@@ -1,7 +1,7 @@
 Field: Amazon S3 File Upload
 -------------------------------------------------------------------------------
 
-Version: 0.5 alpha  
+Version: 0.5.1 alpha  
 
 Author: Andrew Shooner & Brian Zerangue
 

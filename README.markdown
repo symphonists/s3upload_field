@@ -2,8 +2,11 @@ Field: Amazon S3 File Upload
 -------------------------------------------------------------------------------
 
 Version: 0.5 alpha  
+
 Author: Andrew Shooner & Brian Zerangue
+
 Build Date: 2010-06-24
+
 Requirements: Symphony 2.0.6
 
 
@@ -34,6 +37,9 @@ Version .5 of this extension functions as a basic replacement for file uploads, 
 
 
 ##Change Log
+
+___.5.1 alpha - AS___
+- Corrected fatal error in field commit() function.
 
 ___.5 alpha - A.S.___
 - Added S3 class functionality.

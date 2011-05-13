@@ -37,12 +37,17 @@
 				'/workspace/pages',
 				'/workspace/utilities'
 			);
-			$directories = General::listDirStructure(WORKSPACE, true, 'asc', DOCROOT, $ignore);	   	
+			$directories = General::listDirStructure(WORKSPACE, null, 'asc', DOCROOT, $ignore);
 	
-			$label = Widget::Label(__('bucket Bucket'));
+			$label = Widget::Label(__('Bucket'));
 
-			$buckets = $this->S3->listBuckets();
-		$options = array();
+			try {
+				$buckets = $this->S3->listBuckets();				
+			}
+			catch (Exception $e){
+			}
+			
+			$options = array();
 			if(!empty($buckets) && is_array($buckets)){
 				foreach($buckets as $b) {
 					$options[] = array($b, ($this->get('bucket') == $b), $b);
@@ -50,8 +55,11 @@
 			}
 			
 			$label->appendChild(Widget::Select('fields['.$this->get('sortorder').'][bucket]', $options));
-				
-			if(isset($errors['bucket'])) $wrapper->appendChild(Widget::wrapFormElementWithError($label, $errors['bucket']));
+			
+			print_r($errors);
+			if(isset($errors['bucket'])) {
+				$wrapper->appendChild(Widget::wrapFormElementWithError($label, $errors['bucket']));	
+			}
 			else $wrapper->appendChild($label);
 			
 			$this->buildValidationSelect($wrapper, $this->get('validator'), 'fields['.$this->get('sortorder').'][validator]', 'upload');
@@ -136,9 +144,20 @@
 		}
 		
 		public function checkFields(&$errors, $checkForDuplicates=true){
+			
+			
+			if(!is_array($errors)) $errors = array();
+
+			// Check if a related section has been selected
+			if($this->get('bucket') == '') {
+				$errors['bucket'] = 'You have not setup your S3 Access keys yet. Please do so <a href="'.SYMPHONY_URL.'/system/preferences/">here</a>.';
+			}
+			
+			// parent::checkFields($errors, $checkForDuplicates);
+			
 		}
 
-function checkPostFieldData($data, &$message, $entry_id=NULL){
+		function checkPostFieldData($data, &$message, $entry_id=NULL){
 		
 			/*
 				UPLOAD_ERR_OK
@@ -179,6 +198,7 @@ function checkPostFieldData($data, &$message, $entry_id=NULL){
 			
 			if(empty($data) || $data['error'] == UPLOAD_ERR_NO_FILE) {
 				
+
 				if($this->get('required') == 'yes'){
 					$message = __("'%s' is a required field.", array($this->get('label')));
 					return self::__MISSING_FIELDS__;		
@@ -186,6 +206,7 @@ function checkPostFieldData($data, &$message, $entry_id=NULL){
 				
 				return self::__OK__;
 			}
+				
 				
 			## Its not an array, so just retain the current data and return
 			if(!is_array($data)) return self::__OK__;

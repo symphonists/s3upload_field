@@ -59,7 +59,7 @@ class FieldS3Upload extends FieldUpload {
 			$div->appendChild($label);
 		}			
 		
-		$label = Widget::Label(__('Cname'));
+		$label = Widget::Label(__('CNAME'));
 		$label->appendChild(new XMLElement('i', __('Optional')));
 		$label->appendChild(Widget::Input('fields['.$this->get('sortorder').'][cname]', htmlspecialchars($this->get('cname'))));
 
@@ -132,7 +132,8 @@ class FieldS3Upload extends FieldUpload {
 				);
 		}
 		catch (Exception $e) {
-			$status = self::__INVALID_FIELDS__;
+			// print_r($e->getMessage());
+			$status = self::__ERROR_CUSTOM__;
 			return array(
 				'file' => NULL,
 				'mimetype' => NULL,
@@ -176,6 +177,7 @@ class FieldS3Upload extends FieldUpload {
 	}
 	
 	public function entryDataCleanup($entry_id, $data){
+		$this->S3->deleteObject($this->get('bucket'), basename($data['file']));
 		return true;
 	}
 
@@ -247,6 +249,9 @@ class FieldS3Upload extends FieldUpload {
 		}
 
 
+
+
+
 		## Its not an array, so just retain the current data and return
 		if(!is_array($data)) return self::__OK__;
 
@@ -298,15 +303,13 @@ class FieldS3Upload extends FieldUpload {
 
 		}
 
-		$abs_path = "http://" . $this->get('bucket') . "s3.amazonaws.com/";
-		$new_file = $abs_path . '/' . $data['name'];
-		$existing_file = NULL;
-
-		if($entry_id){
-			$row = $this->Database->fetchRow(0, "SELECT * FROM `tbl_entries_data_".$this->get('id')."` WHERE `entry_id` = '$entry_id' LIMIT 1");
-			$existing_file = $abs_path . '/' . basename($row['file'], '/');
+		## check if the file exists since we can't check directly through the s3 library, the file field is unique
+		$s3file = 'http://' . (($this->get('cname') != '') ? $this->get('cname') : $this->get('bucket').".s3.amazonaws.com") . '/' . $data['name'];
+		$row = Symphony::Database()->fetchRow(0, "SELECT * FROM `tbl_entries_data_".$this->get('id')."` WHERE `file`='$s3file'");
+		if (isset($row['file'])) {
+			$message = __('A file with the name %1$s already exists at that bucket. Please rename the file first, or choose another.', array($data['name']));
+			return self::__INVALID_FIELDS__;			
 		}
-
 		return self::__OK__;		
 
 	}
@@ -335,37 +338,24 @@ class FieldS3Upload extends FieldUpload {
 
 	function commit(){
 
+		if(!Field::commit()) return false;
+
+		$id = $this->get('id');
+
+		if($id === false) return false;
+
 		$fields = array();
 
-		$fields['element_name'] = Lang::createHandle($this->get('label'));
-		if(is_numeric($fields['element_name']{0})) $fields['element_name'] = 'field-' . $fields['element_name'];
-
-		$fields['label'] = $this->get('label');
-		$fields['parent_section'] = $this->get('parent_section');
-		$fields['location'] = $this->get('location');
-		$fields['required'] = $this->get('required');
-		$fields['type'] = $this->_handle;
-		$fields['show_column'] = $this->get('show_column');
-		$fields['sortorder'] = (string)$this->get('sortorder');
+		$fields['field_id'] = $id;
 
 
-		if($id = $this->get('id')){
-			$s3fields['field_id'] = $id;
-			$s3fields['bucket'] = $this->get('bucket');
-			$s3fields['cname'] = $this->get('cname');
-			$s3fields['validator'] = ($fields['validator'] == 'custom' ? NULL : $this->get('validator'));
+		$fields['bucket'] = $this->get('bucket');
+		$fields['cname'] = $this->get('cname');
+		$fields['validator'] = ($fields['validator'] == 'custom' ? NULL : $this->get('validator'));
 
-			Symphony::Database()->query("DELETE FROM `tbl_fields_".$this->handle()."` WHERE `field_id` = '$id' LIMIT 1");		
-			return Symphony::Database()->insert($s3fields, 'tbl_fields_' . $this->handle());
+		Symphony::Database()->query("DELETE FROM `tbl_fields_".$this->handle()."` WHERE `field_id` = '$id' LIMIT 1");
+		return Symphony::Database()->insert($fields, 'tbl_fields_' . $this->handle());
 
-		}
-
-		elseif($id = $this->_Parent->add($fields)){
-			$this->set('id', $id);
-			$this->createTable();
-			return true;
-		}
-		return false;
 	}	
 
 	public function createTable(){
@@ -380,7 +370,7 @@ class FieldS3Upload extends FieldUpload {
 			`meta` varchar(255) default NULL,
 			PRIMARY KEY  (`id`),
 			KEY `entry_id` (`entry_id`),
-			KEY `file` (`file`),
+			UNIQUE KEY `file` (`file`),
 			KEY `mimetype` (`mimetype`)
 			) ENGINE=MyISAM;"
 

@@ -35,7 +35,7 @@ This extension functions as a basic replacement for file uploads, allowing hosti
 
 ## Change Log
 
-___0.6___
+___0.6 - ST___
 
 - Bug fixes to get it working with Symphony 2.2
 - You can't add a field to a section until you setup your API keys

@@ -56,10 +56,24 @@ class FieldS3Upload extends FieldUpload {
 
 		$label->appendChild(Widget::Select('fields['.$this->get('sortorder').'][bucket]', $options));
 
+		$div = new XMLElement('div', NULL, array('class' => 'group'));
+
+
 		if(isset($errors['bucket'])) {
-			$wrapper->appendChild(Widget::wrapFormElementWithError($label, $errors['bucket']));	
+			$div->appendChild(Widget::wrapFormElementWithError($label, $errors['bucket']));	
 		}
-		else $wrapper->appendChild($label);
+		else {
+			$div->appendChild($label);
+		}			
+		
+		$label = Widget::Label(__('CNAME (optional)'));
+		$label->appendChild(Widget::Input('fields[' . $this->get('sortorder') . '][cname]'));
+		$div->appendChild($label);
+
+		
+		$wrapper->appendChild($div);
+
+
 
 		$this->buildValidationSelect($wrapper, $this->get('validator'), 'fields['.$this->get('sortorder').'][validator]', 'upload');
 		//$this->buildValidationSelect($wrapper, $this->_driver->getAmazonS3AccessKeyId(), 'fields['.$this->get('sortorder').'][validator]', 'upload');
@@ -162,9 +176,13 @@ class FieldS3Upload extends FieldUpload {
 
 		if(!is_array($errors)) $errors = array();
 
+		if(!preg_match('/[^\.]/i')) {
+			$errors['cname'] = __('This is an invalid CNAME');
+		}
+
 		// Check if a related section has been selected
 		if($this->get('bucket') == '') {
-			$errors['bucket'] = 'You have not setup your S3 Access keys yet. Please do so <a href="'.SYMPHONY_URL.'/system/preferences/">here</a>.';
+			$errors['bucket'] = __('You have not setup your S3 Access keys yet. Please do so <a href="'.SYMPHONY_URL.'/system/preferences/">here</a>.');
 		}
 
 		// parent::checkFields($errors, $checkForDuplicates);

@@ -18,26 +18,19 @@ class FieldS3Upload extends FieldUpload {
 
 	}
 
-	private function getUniqueFilename($filename) {
-		// since unix timestamp is 10 digits, the unique filename will be limited to ($crop+1+10) characters;
-		$crop  = '33';
-		return preg_replace("/(.*)(\.[^\.]+)/e", "substr('$1', 0, $crop).'-'.time().'$2'", $filename);
-	}
-
-
 
 	public function displaySettingsPanel(&$wrapper, $errors = null) {
 		field::displaySettingsPanel($wrapper, $errors);
 
-		## bucket Folder
-		$ignore = array(
-			'/workspace/events',
-			'/workspace/data-sources',
-			'/workspace/text-formatters',
-			'/workspace/pages',
-			'/workspace/utilities'
-			);
-		$directories = General::listDirStructure(WORKSPACE, null, 'asc', DOCROOT, $ignore);
+		// ## bucket Folder
+		// $ignore = array(
+		// 	'/workspace/events',
+		// 	'/workspace/data-sources',
+		// 	'/workspace/text-formatters',
+		// 	'/workspace/pages',
+		// 	'/workspace/utilities'
+		// 	);
+		// $directories = General::listDirStructure(WORKSPACE, null, 'asc', DOCROOT, $ignore);
 
 		$label = Widget::Label(__('Bucket'));
 
@@ -66,9 +59,17 @@ class FieldS3Upload extends FieldUpload {
 			$div->appendChild($label);
 		}			
 		
-		$label = Widget::Label(__('CNAME (optional)'));
-		$label->appendChild(Widget::Input('fields[' . $this->get('sortorder') . '][cname]'));
-		$div->appendChild($label);
+		$label = Widget::Label(__('Cname'));
+		$label->appendChild(new XMLElement('i', __('Optional')));
+		$label->appendChild(Widget::Input('fields['.$this->get('sortorder').'][cname]', htmlspecialchars($this->get('cname'))));
+
+		
+		if (isset($errors['cname'])) {
+			$div->appendChild(Widget::wrapFormElementWithError($label, $errors['cname']));
+		}
+		else {
+			$div->appendChild($label);
+		}
 
 		
 		$wrapper->appendChild($div);
@@ -76,7 +77,6 @@ class FieldS3Upload extends FieldUpload {
 
 
 		$this->buildValidationSelect($wrapper, $this->get('validator'), 'fields['.$this->get('sortorder').'][validator]', 'upload');
-		//$this->buildValidationSelect($wrapper, $this->_driver->getAmazonS3AccessKeyId(), 'fields['.$this->get('sortorder').'][validator]', 'upload');
 
 
 		$this->appendRequiredCheckbox($wrapper);
@@ -144,8 +144,12 @@ class FieldS3Upload extends FieldUpload {
 		$status = self::__OK__;
 
 		//$file = rtrim($rel_path, '/') . '/' . trim($data['name'], '/');
-		$file = "http://" . $this->get('bucket') . ".s3.amazonaws.com/" . $data['name'];
-
+		if ($this->get('cname') == '') {
+			$file = "http://" . $this->get('bucket') . ".s3.amazonaws.com/" . $data['name'];
+		}
+		else {
+			$file = "http://" . $this->get('cname') . "/" . $data['name'];
+		}
 
 		if($entry_id){
 			$row = $this->Database->fetchRow(0, "SELECT * FROM `tbl_entries_data_".$this->get('id')."` WHERE `entry_id` = '$entry_id' LIMIT 1");
@@ -170,14 +174,17 @@ class FieldS3Upload extends FieldUpload {
 			);
 
 	}
+	
+	public function entryDataCleanup($entry_id, $data){
+		return true;
+	}
 
 	public function checkFields(&$errors, $checkForDuplicates=true){
 
 
 		if(!is_array($errors)) $errors = array();
-
-		if(!preg_match('/[^\.]/i')) {
-			$errors['cname'] = __('This is an invalid CNAME');
+		if($this->get('cname') != '' && !preg_match('/([.]+)/i',$this->get('cname'))) {
+			$errors['cname'] = __('This is an invalid CNAME. Don\'t include the protocol (http/s).');
 		}
 
 		// Check if a related section has been selected
@@ -185,7 +192,7 @@ class FieldS3Upload extends FieldUpload {
 			$errors['bucket'] = __('You have not setup your S3 Access keys yet. Please do so <a href="'.SYMPHONY_URL.'/system/preferences/">here</a>.');
 		}
 
-		// parent::checkFields($errors, $checkForDuplicates);
+		return Field::checkFields($errors, $checkForDuplicates);
 
 	}
 
@@ -345,6 +352,7 @@ class FieldS3Upload extends FieldUpload {
 		if($id = $this->get('id')){
 			$s3fields['field_id'] = $id;
 			$s3fields['bucket'] = $this->get('bucket');
+			$s3fields['cname'] = $this->get('cname');
 			$s3fields['validator'] = ($fields['validator'] == 'custom' ? NULL : $this->get('validator'));
 
 			Symphony::Database()->query("DELETE FROM `tbl_fields_".$this->handle()."` WHERE `field_id` = '$id' LIMIT 1");		

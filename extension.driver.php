@@ -1,5 +1,6 @@
 <?php
 
+	require_once(TOOLKIT . '/class.entrymanager.php');
 	require_once(EXTENSIONS .'/s3upload_field/lib/S3.php');
 
 	Class extension_s3upload_field extends Extension {
@@ -11,15 +12,15 @@
 				'release-date'	=> '2011-05-13',
 				'author'		=> array(
 					array(
-					'name'			=> 'Andrew Shooner and Brian Zerangue',
-					'website'		=> 'http://andrewshooner.com',
-					'email'			=> 'ashooner@gmail.com'
-					),
-					array(
 						'name'			=> 'Scott Tesoriere',
 						'website'		=> 'http://tesoriere.com',
 						'email'			=> 'scott@tesoriere.com'
-					)
+					),
+					array(
+						'name'			=> 'Andrew Shooner and Brian Zerangue',
+						'website'		=> 'http://andrewshooner.com',
+						'email'			=> 'ashooner@gmail.com'
+					),
 				),
 				'description'	=> 'Upload files to Amazon S3. Based on Brian Zerangue\'s version, based on Michael E\'s upload field.'
 			);
@@ -36,9 +37,10 @@
 							'page' => '/system/preferences/',
 							'delegate' => 'AddCustomPreferenceFieldsets',
 							'callback' => 'appendPreferences'
-						)
+						),
 					);
 		}
+		
 		
 		public function appendPreferences($context){
 					$group = new XMLElement('fieldset');

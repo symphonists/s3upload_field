@@ -37,6 +37,8 @@ This extension functions as a basic replacement for file uploads, allowing hosti
 
 ___0.6 - ST___
 
+- Now deletes a file from S3 upon deleting an Entry 
+- You can specify an optional CNAME so the files will generate the proper URL without intervention
 - Bug fixes to get it working with Symphony 2.2
 - You can't add a field to a section until you setup your API keys
 - Added mimetype and size to the XML output

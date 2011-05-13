@@ -7,12 +7,19 @@
 		public function about() {
 			return array(
 				'name'			=> 'Field: Amazon S3 File Upload',
-				'version'		=> '.6',
-				'release-date'	=> '2010-06-24',
+				'version'		=> '0.6',
+				'release-date'	=> '2011-05-13',
 				'author'		=> array(
+					array(
 					'name'			=> 'Andrew Shooner and Brian Zerangue',
 					'website'		=> 'http://andrewshooner.com',
 					'email'			=> 'ashooner@gmail.com'
+					),
+					array(
+						'name'			=> 'Scott Tesoriere',
+						'website'		=> 'http://tesoriere.com',
+						'email'			=> 'scott@tesoriere.com'
+					)
 				),
 				'description'	=> 'Upload files to Amazon S3. Based on Brian Zerangue\'s version, based on Michael E\'s upload field.'
 			);
@@ -20,11 +27,16 @@
 		
 		public function getSubscribedDelegates(){
 					return array(
-								array(
-									'page' => '/system/preferences/',
-									'delegate' => 'AddCustomPreferenceFieldsets',
-									'callback' => 'appendPreferences'
-								)
+						array(
+							'page' => '/system/preferences/',
+							'delegate' => 'CustomActions',
+							'callback' => 'savePreferences'
+						),
+						array(
+							'page' => '/system/preferences/',
+							'delegate' => 'AddCustomPreferenceFieldsets',
+							'callback' => 'appendPreferences'
+						)
 					);
 		}
 		
@@ -49,6 +61,9 @@
 
 		public function uninstall() {
 			$this->_Parent->Database->query("DROP TABLE `tbl_fields_s3upload`");
+			Symphony::Configuration()->remove('s3upload_field');
+			Administration::instance()->saveConfig();
+			
 		}
 
 		public function install() {
@@ -63,18 +78,11 @@
 		}
 		
 		public function getAmazonS3AccessKeyId(){
-					if(class_exists('ConfigurationAccessor'))
-						return ConfigurationAccessor::get('access-key-id', 's3upload_field');
-
-					return $this->_Parent->Configuration->get('access-key-id', 's3upload_field');
-				}
+			return Symphony::Configuration()->get('access-key-id', 's3upload_field');
+		}
 				
 		public function getAmazonS3SecretAccessKey(){
-					if(class_exists('ConfigurationAccessor'))
-						return ConfigurationAccessor::get('secret-access-key', 's3upload_field');
-
-					return $this->_Parent->Configuration->get('secret-access-key', 's3upload_field');
-				}
-				
+			return Symphony::Configuration()->get('secret-access-key', 's3upload_field');
+		}
 
 	}

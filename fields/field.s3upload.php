@@ -97,7 +97,7 @@ class FieldS3Upload extends FieldUpload {
 
 		$span = new XMLElement('span');
 		$span->setAttribute('class','frame');
-		if($data['file']) $span->appendChild(Widget::Anchor($data['file'], $data['file']));
+		if($data['file']) $span->appendChild(Widget::Anchor($this->getUrl($data['file']), $this->getUrl($data['file'])));
 
 		$span->appendChild(Widget::Input('fields'.$fieldnamePrefix.'['.$this->get('element_name').']'.$fieldnamePostfix, $data['file'], ($data['file'] ? 'hidden' : 'file')));
 
@@ -361,12 +361,8 @@ class FieldS3Upload extends FieldUpload {
 	function appendFormattedElement(&$wrapper, $data){
 		$item = new XMLElement($this->get('element_name'));
 
-		if ($this->get('cname') == '') {
-			$url = "http://" . $this->get('bucket') . ".s3.amazonaws.com/" . $data['file'];
-		}
-		else {
-			$url = "http://" . $this->get('cname') . "/" . $data['file'];
-		}
+
+		$url = $this->getUrl($data['file']);
 
 		$item->setAttributeArray(array(
 			'url' => $url,
@@ -409,6 +405,16 @@ class FieldS3Upload extends FieldUpload {
 		return Symphony::Database()->insert($fields, 'tbl_fields_' . $this->handle());
 
 	}	
+	
+	private function getUrl($file) {
+		if ($this->get('cname') == '') {
+			$url = "http://" . $this->get('bucket') . ".s3.amazonaws.com/" . $file;
+		}
+		else {
+			$url = "http://" . $this->get('cname') . "/" . $file;
+		}
+		return $url;
+	}
 
 	public function createTable(){
 

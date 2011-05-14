@@ -74,6 +74,7 @@
 				`field_id` int(11) unsigned NOT NULL,
 				`bucket` varchar(255) NOT NULL,
 				`cname` varchar(255),
+				`remove_from_bucket` tinyint(1) DEFAULT '1',
 				`validator` varchar(50),
 				PRIMARY KEY (`id`),
 				KEY `field_id` (`field_id`))"

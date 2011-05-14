@@ -78,6 +78,9 @@ class FieldS3Upload extends FieldUpload {
 
 		$this->buildValidationSelect($wrapper, $this->get('validator'), 'fields['.$this->get('sortorder').'][validator]', 'upload');
 
+		$setting = new XMLElement('label', '<input name="fields[' . $this->get('sortorder') . '][remove_from_bucket]" value="1" type="checkbox"' . (($this->get('remove_from_bucket') != 0 || $this->get('remove_from_bucket') == null) ? ' checked="checked"' : '') . '/> ' . __('Remove file from S3 upon deletion of entry'));
+
+		$wrapper->appendChild($setting);
 
 		$this->appendRequiredCheckbox($wrapper);
 		$this->appendShowColumnCheckbox($wrapper);
@@ -177,7 +180,8 @@ class FieldS3Upload extends FieldUpload {
 	}
 	
 	public function entryDataCleanup($entry_id, $data){
-		$this->S3->deleteObject($this->get('bucket'), basename($data['file']));
+		if ($this->get('remove_from_bucket') == true)
+			$this->S3->deleteObject($this->get('bucket'), basename($data['file']));
 		return true;
 	}
 
@@ -351,6 +355,7 @@ class FieldS3Upload extends FieldUpload {
 
 		$fields['bucket'] = $this->get('bucket');
 		$fields['cname'] = $this->get('cname');
+		$fields['remove_from_bucket'] = ($this->get('remove_from_bucket') == '' ? '0' : '1');
 		$fields['validator'] = ($fields['validator'] == 'custom' ? NULL : $this->get('validator'));
 
 		Symphony::Database()->query("DELETE FROM `tbl_fields_".$this->handle()."` WHERE `field_id` = '$id' LIMIT 1");

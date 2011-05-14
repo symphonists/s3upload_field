@@ -5,8 +5,6 @@
 - Build Date: 2011-05-13
 - Requirements: Symphony 2.2+
 
-
-
 ## Origin
 
 This extension is a variation of the 'Unique File Upload Field' extension by 
@@ -37,7 +35,7 @@ This extension functions as a basic replacement for file uploads, allowing hosti
 
 ___0.6 - ST___
 
-- Now deletes a file from S3 upon deleting an Entry 
+- Now deletes a file from S3 upon deleting an Entry (this is optional and set upon creating a S3 field within a section)
 - You can specify an optional CNAME so the files will generate the proper URL without intervention
 - Bug fixes to get it working with Symphony 2.2
 - You can't add a field to a section until you setup your API keys
@@ -58,4 +56,7 @@ ___.1.0 alpha - B.Z___
 
 - Initial release - posting code to work off of base. Need to integrate Amazon S3 class now.
 
+## To do
+
+- Proper error checking, there are still a few uncaught exceptions.
 

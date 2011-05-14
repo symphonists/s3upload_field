@@ -164,10 +164,7 @@ class FieldS3Upload extends FieldUpload {
 			}
 
 		}
-		// 
-		// print_r($row);
-		// print_r($data);
-		
+
 		## Upload the new file
 		try {
 			$this->S3->putObject(

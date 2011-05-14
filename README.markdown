@@ -36,6 +36,7 @@ This extension functions as a basic replacement for file uploads, allowing hosti
 ___0.6.2 - ST___
 
 - Dealing with the way files stored in the database, so even if you change the CNAME (or remove it), the proper URL will be displayed
+- Fixed editing an entry, it wasn't working with some legacy code!
 
 ___0.6.1 - ST___
 

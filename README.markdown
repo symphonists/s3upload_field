@@ -35,6 +35,7 @@ This extension functions as a basic replacement for file uploads, allowing hosti
 
 ___0.6.2 - ST___
 
+- If the bucket gets deleted, it won't throw an exception
 - Dealing with the way files stored in the database, so even if you change the CNAME (or remove it), the proper URL will be displayed
 - Fixed editing an entry, it wasn't working with some legacy code!
 

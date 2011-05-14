@@ -158,12 +158,12 @@ class FieldS3Upload extends FieldUpload {
 		if($entry_id){
 			$row = $this->Database->fetchRow(0, "SELECT * FROM `tbl_entries_data_".$this->get('id')."` WHERE `entry_id` = '$entry_id' LIMIT 1");
 			$existing_file = $row['file'];
-
-			if (strtolower($existing_file) != strtolower($data['name'])) { // && THE FILE DOESN'T EXIST ON S3**
+			if ($row['file'] != NULL && strtolower($existing_file) != strtolower($data['name'])) { // && THE FILE DOESN'T EXIST ON S3**
 				$this->S3->deleteObject($this->get('bucket'), basename($existing_file));
 			}
 
 		}
+
 
 		## Upload the new file
 		try {
@@ -175,8 +175,6 @@ class FieldS3Upload extends FieldUpload {
 				);
 		}
 		catch (Exception $e) {
-			
-			// print_r($e->getMessage());
 			$status = self::__ERROR_CUSTOM__;
 			return array(
 				'file' => NULL,
@@ -208,8 +206,12 @@ class FieldS3Upload extends FieldUpload {
 	}
 	
 	public function entryDataCleanup($entry_id, $data){
-		if ($this->get('remove_from_bucket') == true)
-			$this->S3->deleteObject($this->get('bucket'), basename($data['file']));
+		if ($this->get('remove_from_bucket') == true) {
+			try {
+				$this->S3->deleteObject($this->get('bucket'), basename($data['file']));
+			}
+			catch (Exception $e) {	;}
+		}
 
 		Field::entryDataCleanup($entry_id);
 
@@ -271,6 +273,14 @@ class FieldS3Upload extends FieldUpload {
 			//	)
 
 		$message = NULL;
+
+		try {
+			$this->S3->getBucket($this->get('bucket'));
+		}
+		catch (Exception $e) {
+			$message = __('The bucket %s doesn\'t exist! Please update this section.', array($this->get('bucket')));
+			return self::__INVALID_FIELDS__;	
+		}
 
 		if(empty($data) || $data['error'] == UPLOAD_ERR_NO_FILE) {
 

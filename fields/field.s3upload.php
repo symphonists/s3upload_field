@@ -182,6 +182,9 @@ class FieldS3Upload extends FieldUpload {
 	public function entryDataCleanup($entry_id, $data){
 		if ($this->get('remove_from_bucket') == true)
 			$this->S3->deleteObject($this->get('bucket'), basename($data['file']));
+
+		Field::entryDataCleanup($entry_id);
+
 		return true;
 	}
 

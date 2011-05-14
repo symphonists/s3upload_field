@@ -8,8 +8,8 @@
 		public function about() {
 			return array(
 				'name'			=> 'Field: Amazon S3 File Upload',
-				'version'		=> '0.6',
-				'release-date'	=> '2011-05-13',
+				'version'		=> '0.6.1',
+				'release-date'	=> '2011-05-14',
 				'author'		=> array(
 					array(
 						'name'			=> 'Scott Tesoriere',

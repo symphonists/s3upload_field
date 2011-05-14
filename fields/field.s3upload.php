@@ -112,19 +112,62 @@ class FieldS3Upload extends FieldUpload {
 
 		$status = self::__OK__;
 
-		## Its not an array, so just retain the current data and return
+		//fixes bug where files are deleted, but their database entries are not.
+		if($data === NULL){
+			return array(
+				'file' => NULL,
+				'mimetype' => NULL,
+				'size' => NULL,
+				'meta' => NULL
+			);
+		}
+
+		## Its not an array, so just retain the current data and return (the case where we're not uploading a new file)
 		if(!is_array($data)){
 
 			$status = self::__OK__;
+
+			$result = array(
+				'file' => $data,
+				'mimetype' => NULL,
+				'size' => NULL,
+				'meta' => NULL
+			);
+
+			// Grab the existing entry data to preserve the MIME type and size information
+			if(isset($entry_id) && !is_null($entry_id)){
+				$row = Symphony::Database()->fetchRow(0, sprintf(
+					"SELECT `file`, `mimetype`, `size`, `meta` FROM `tbl_entries_data_%d` WHERE `entry_id` = %d",
+					$this->get('id'),
+					$entry_id
+				));
+				if(!empty($row)){
+					$result = $row;
+				}
+			}
+			
+			return $result;
 		}
 
 		if($simulate) return;
 
 		if($data['error'] == UPLOAD_ERR_NO_FILE || $data['error'] != UPLOAD_ERR_OK) return;
 
-		## Sanitize the filename
-		$data['name'] = Lang::createFilename($data['name']);
 
+		// Where we're uploading a new file and getting rid of the old one
+		if($entry_id){
+			$row = $this->Database->fetchRow(0, "SELECT * FROM `tbl_entries_data_".$this->get('id')."` WHERE `entry_id` = '$entry_id' LIMIT 1");
+			$existing_file = $row['file'];
+
+			if (strtolower($existing_file) != strtolower($data['name'])) { // && THE FILE DOESN'T EXIST ON S3**
+				$this->S3->deleteObject($this->get('bucket'), basename($existing_file));
+			}
+
+		}
+		// 
+		// print_r($row);
+		// print_r($data);
+		
 		## Upload the new file
 		try {
 			$this->S3->putObject(
@@ -135,6 +178,7 @@ class FieldS3Upload extends FieldUpload {
 				);
 		}
 		catch (Exception $e) {
+			
 			// print_r($e->getMessage());
 			$status = self::__ERROR_CUSTOM__;
 			return array(
@@ -147,22 +191,8 @@ class FieldS3Upload extends FieldUpload {
 
 		$status = self::__OK__;
 
-		//$file = rtrim($rel_path, '/') . '/' . trim($data['name'], '/');
-		if ($this->get('cname') == '') {
-			$file = "http://" . $this->get('bucket') . ".s3.amazonaws.com/" . $data['name'];
-		}
-		else {
-			$file = "http://" . $this->get('cname') . "/" . $data['name'];
-		}
 
-		if($entry_id){
-			$row = $this->Database->fetchRow(0, "SELECT * FROM `tbl_entries_data_".$this->get('id')."` WHERE `entry_id` = '$entry_id' LIMIT 1");
-			$existing_file = rtrim($rel_path, '/') . '/' . trim(basename($row['file']), '/');
 
-			if((strtolower($existing_file) != strtolower($file)) && file_exists(WORKSPACE . $existing_file)){
-				General::deleteFile(WORKSPACE . $existing_file);
-			}
-		}
 
 		## If browser doesn't send MIME type (e.g. .flv in Safari)
 		if (strlen(trim($data['type'])) == 0){
@@ -170,8 +200,9 @@ class FieldS3Upload extends FieldUpload {
 		}
 
 
+		// all we need is the path and name, the domain is abstracted depending on whether or not it has a cname
 		return array(
-			'file' => $file,
+			'file' => $data['name'],
 			'size' => $data['size'],
 			'mimetype' => $data['type'],
 			'meta' => serialize(parent::getMetaInfo($data['tmp_name'], $data['type']))
@@ -311,8 +342,7 @@ class FieldS3Upload extends FieldUpload {
 		}
 
 		## check if the file exists since we can't check directly through the s3 library, the file field is unique
-		$s3file = 'http://' . (($this->get('cname') != '') ? $this->get('cname') : $this->get('bucket').".s3.amazonaws.com") . '/' . $data['name'];
-		$row = Symphony::Database()->fetchRow(0, "SELECT * FROM `tbl_entries_data_".$this->get('id')."` WHERE `file`='$s3file'");
+		$row = Symphony::Database()->fetchRow(0, "SELECT * FROM `tbl_entries_data_".$this->get('id')."` WHERE `file`='".$data['name']."'");
 		if (isset($row['file'])) {
 			$message = __('A file with the name %1$s already exists at that bucket. Please rename the file first, or choose another.', array($data['name']));
 			return self::__INVALID_FIELDS__;			
@@ -324,8 +354,15 @@ class FieldS3Upload extends FieldUpload {
 	function appendFormattedElement(&$wrapper, $data){
 		$item = new XMLElement($this->get('element_name'));
 
+		if ($this->get('cname') == '') {
+			$url = "http://" . $this->get('bucket') . ".s3.amazonaws.com/" . $data['file'];
+		}
+		else {
+			$url = "http://" . $this->get('cname') . "/" . $data['file'];
+		}
+
 		$item->setAttributeArray(array(
-			'url' => $data['file'],
+			'url' => $url,
 			));
 
 		$item->appendChild(new XMLElement('filename', General::sanitize(basename($data['file']))));

@@ -1,6 +1,6 @@
 # Field: Amazon S3 File Upload
 
-- Version: 0.6.1
+- Version: 0.6.2
 - Author: Scott Tesoriere & Andrew Shooner & Brian Zerangue
 - Build Date: 2011-05-14
 - Requirements: Symphony 2.2+
@@ -33,6 +33,10 @@ This extension functions as a basic replacement for file uploads, allowing hosti
 
 ## Change Log
 
+___0.6.2 - ST___
+
+- Dealing with the way files stored in the database, so even if you change the CNAME (or remove it), the proper URL will be displayed
+
 ___0.6.1 - ST___
 
 - Fixed a problem where an entry wouldn't properly remove itself completely
@@ -62,5 +66,6 @@ ___.1.0 alpha - B.Z___
 
 ## To do
 
+- If the CNAME is removed or added, update all the files and fields so it has or doesn't have the CNAME, otherwise it will be kind of wonky
 - Proper error checking, there are still a few uncaught exceptions.
 

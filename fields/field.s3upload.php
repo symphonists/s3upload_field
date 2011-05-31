@@ -108,6 +108,21 @@ class FieldS3Upload extends FieldUpload {
 
 	}
 
+	public function prepareTableValue($data, XMLElement $link=NULL){
+		if(!$file = $data['file']) return NULL;
+
+		if($link){
+			$link->setValue(basename($file));
+			return $link->generate();
+		}
+
+		else{
+			$link = Widget::Anchor($this->getUrl($file),$this->getUrl($file));
+			return $link->generate();
+		}
+
+	}
+
 	public function processRawFieldData($data, &$status, $simulate=false, $entry_id=NULL){
 
 		$status = self::__OK__;
@@ -375,7 +390,6 @@ class FieldS3Upload extends FieldUpload {
 		$item->setAttributeArray(array(
 			'url' => $url,
 			));
-
 		$item->appendChild(new XMLElement('filename', General::sanitize(basename($data['file']))));
 		$item->appendChild(new XMLElement('size', $data['size']));
 		$item->appendChild(new XMLElement('mimetype', $data['mimetype']));		

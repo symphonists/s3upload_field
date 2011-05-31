@@ -35,8 +35,8 @@ This extension functions as a basic replacement for file uploads, allowing hosti
 
 ___0.6.3 - ST___
 
-- Wasn't sending the Content-Type to S3, thanks Michael!
-- Accidently removed bucket if the filename was empty and it was the last file in the bucket
+- Wasn't setting the Content-Type for S3 files, thanks Michael!
+- Accidentally removed bucket if the filename was empty and it was the last file in the bucket
 - Wasn't properly removing files when a file was removed then saved
 
 ___0.6.2 - ST___

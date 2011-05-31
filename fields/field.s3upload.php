@@ -151,18 +151,20 @@ class FieldS3Upload extends FieldUpload {
 
 		if($simulate) return;
 
-		if($data['error'] == UPLOAD_ERR_NO_FILE || $data['error'] != UPLOAD_ERR_OK) return;
 
 
-		// Where we're uploading a new file and getting rid of the old one
+		// Editing an entry: Where we're uploading a new file and getting rid of the old one
 		if($entry_id){
 			$row = $this->Database->fetchRow(0, "SELECT * FROM `tbl_entries_data_".$this->get('id')."` WHERE `entry_id` = '$entry_id' LIMIT 1");
 			$existing_file = $row['file'];
-			if ($row['file'] != NULL && strtolower($existing_file) != strtolower($data['name'])) { // && THE FILE DOESN'T EXIST ON S3**
+			if ($data['error'] == UPLOAD_ERR_NO_FILE && !is_null($existing_file)) {
+			// if ($row['file'] != NULL && ((!$data['name']) || (strtolower($existing_file) != strtolower($data['name'])))) { // && THE FILE DOESN'T EXIST ON S3**
 				$this->S3->deleteObject($this->get('bucket'), basename($existing_file));
 			}
 
 		}
+
+		if($data['error'] == UPLOAD_ERR_NO_FILE || $data['error'] != UPLOAD_ERR_OK) return;
 
 
 		## Upload the new file

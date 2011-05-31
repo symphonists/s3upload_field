@@ -181,7 +181,7 @@ class FieldS3Upload extends FieldUpload {
 		}
 
 
-		if ($this->get('ssl_option' == true) && isset($data['name'])) $data['name'] = $this->getUniqueFilename($data['name']);
+		if ($this->get('unique_filename') == true && isset($data['name'])) $this->getUniqueFilename($data['name']);
 
 		if($simulate) return;
 
@@ -382,7 +382,7 @@ class FieldS3Upload extends FieldUpload {
 		$data['name'] = Lang::createFilename($data['name']);
 
 		## uniq the filename
-		if ($this->get('ssl_option' == true) && isset($data['name'])) $data['name'] = $this->getUniqueFilename($data['name']);
+		if ($this->get('unique_filename') == true && isset($data['name'])) $this->getUniqueFilename($data['name']);
 
 
 		if($this->get('validator') != NULL){
@@ -466,10 +466,10 @@ class FieldS3Upload extends FieldUpload {
 		return $url;
 	}
 	
-	private function getUniqueFilename($file) {
+	private function getUniqueFilename(&$file) {
 		## since unix timestamp is 10 digits, the unique filename will be limited to ($crop+1+10) characters;
 		$crop  = '33';
-		return preg_replace("/(.*)(\.[^\.]+)/e", "substr('$1', 0, $crop).'-'.time().'$2'", $filename);		
+		$file = preg_replace("/(.*)(\.[^\.]+)/e", "substr('$1', 0, $crop).'-'.time().'$2'", $file);
 	}
 
 	public function createTable(){

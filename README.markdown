@@ -35,7 +35,9 @@ This extension functions as a basic replacement for file uploads, allowing hosti
 
 ___0.6.4 - ST___
 
-
+- Properly removes old files when adding a new one
+- Added SSL option
+- Added Unique File option
 
 ___0.6.3 - ST___
 

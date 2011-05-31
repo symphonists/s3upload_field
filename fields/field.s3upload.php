@@ -174,8 +174,12 @@ class FieldS3Upload extends FieldUpload {
 				$this->S3->inputResource(fopen($data['tmp_name'], 'rb'), filesize($data['tmp_name'])), 
 				$this->get('bucket'), 
 				$data['name'], 
-				'public-read'
-				);
+				'public-read',
+				array(),
+				array(
+					'Content-Type' => $data['type'],
+				)
+			);
 		}
 		catch (Exception $e) {
 			$status = self::__ERROR_CUSTOM__;

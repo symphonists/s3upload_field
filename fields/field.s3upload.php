@@ -159,6 +159,7 @@ class FieldS3Upload extends FieldUpload {
 			$existing_file = $row['file'];
 			if ($data['error'] == UPLOAD_ERR_NO_FILE && !is_null($existing_file)) {
 			// if ($row['file'] != NULL && ((!$data['name']) || (strtolower($existing_file) != strtolower($data['name'])))) { // && THE FILE DOESN'T EXIST ON S3**
+			// this might delete the buckets
 				$this->S3->deleteObject($this->get('bucket'), basename($existing_file));
 			}
 
@@ -210,7 +211,8 @@ class FieldS3Upload extends FieldUpload {
 	public function entryDataCleanup($entry_id, $data){
 		if ($this->get('remove_from_bucket') == true) {
 			try {
-				$this->S3->deleteObject($this->get('bucket'), basename($data['file']));
+				if (!is_null($data['file']))
+					$this->S3->deleteObject($this->get('bucket'), basename($data['file']));
 			}
 			catch (Exception $e) {	;}
 		}

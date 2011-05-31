@@ -74,16 +74,32 @@ class FieldS3Upload extends FieldUpload {
 		
 		$wrapper->appendChild($div);
 
-
+		$div = new XMLElement('div', NULL, array('class' => 'group'));
 
 		$this->buildValidationSelect($wrapper, $this->get('validator'), 'fields['.$this->get('sortorder').'][validator]', 'upload');
 
+		$setting = new XMLElement('label', '<input name="fields[' . $this->get('sortorder') . '][ssl_option]" value="1" type="checkbox"' . (($this->get('ssl_option') != 0 || $this->get('ssl_option') == null) ? ' checked="checked"' : '') . '/> ' . __('Build links using https://'));
+		$div->appendChild($setting);
+
+
+		$setting = new XMLElement('label', '<input name="fields[' . $this->get('sortorder') . '][unique_filename]" value="1" type="checkbox"' . (($this->get('unique_filename') != 0 || $this->get('unique_filename') == null) ? ' checked="checked"' : '') . '/> ' . __('Automatically give the files a unique filename'));
+		$div->appendChild($setting);
+
+
+		$wrapper->appendChild($div);
+		$div = new XMLElement('div', NULL, array('class' => 'group'));
+
 		$setting = new XMLElement('label', '<input name="fields[' . $this->get('sortorder') . '][remove_from_bucket]" value="1" type="checkbox"' . (($this->get('remove_from_bucket') != 0 || $this->get('remove_from_bucket') == null) ? ' checked="checked"' : '') . '/> ' . __('Remove file from S3 upon deletion of entry'));
+		$div->appendChild($setting);
+		$this->appendRequiredCheckbox($div);
 
-		$wrapper->appendChild($setting);
+		$wrapper->appendChild($div);
+		$div = new XMLElement('div', NULL, array('class' => 'group'));
 
-		$this->appendRequiredCheckbox($wrapper);
-		$this->appendShowColumnCheckbox($wrapper);
+		$this->appendShowColumnCheckbox($div);
+
+		$wrapper->appendChild($div);
+
 
 	}
 
@@ -164,17 +180,19 @@ class FieldS3Upload extends FieldUpload {
 			return $result;
 		}
 
+
+		if ($this->get('ssl_option' == true) && isset($data['name'])) $data['name'] = $this->getUniqueFilename($data['name']);
+
 		if($simulate) return;
 
 
+		
 
 		// Editing an entry: Where we're uploading a new file and getting rid of the old one
 		if($entry_id){
 			$row = $this->Database->fetchRow(0, "SELECT * FROM `tbl_entries_data_".$this->get('id')."` WHERE `entry_id` = '$entry_id' LIMIT 1");
 			$existing_file = $row['file'];
-			if ($data['error'] == UPLOAD_ERR_NO_FILE && !is_null($existing_file)) {
-			// if ($row['file'] != NULL && ((!$data['name']) || (strtolower($existing_file) != strtolower($data['name'])))) { // && THE FILE DOESN'T EXIST ON S3**
-			// this might delete the buckets
+			if ((!is_null($existing_file) && strtolower($existing_file) != strtolower($data['file'])) || ($data['error'] == UPLOAD_ERR_NO_FILE && !is_null($existing_file))) {
 				$this->S3->deleteObject($this->get('bucket'), basename($existing_file));
 			}
 
@@ -182,6 +200,8 @@ class FieldS3Upload extends FieldUpload {
 
 		if($data['error'] == UPLOAD_ERR_NO_FILE || $data['error'] != UPLOAD_ERR_OK) return;
 
+
+		
 
 		## Upload the new file
 		try {
@@ -361,6 +381,10 @@ class FieldS3Upload extends FieldUpload {
 		## Sanitize the filename
 		$data['name'] = Lang::createFilename($data['name']);
 
+		## uniq the filename
+		if ($this->get('ssl_option' == true) && isset($data['name'])) $data['name'] = $this->getUniqueFilename($data['name']);
+
+
 		if($this->get('validator') != NULL){
 			$rule = $this->get('validator');
 
@@ -421,6 +445,8 @@ class FieldS3Upload extends FieldUpload {
 		$fields['bucket'] = $this->get('bucket');
 		$fields['cname'] = $this->get('cname');
 		$fields['remove_from_bucket'] = ($this->get('remove_from_bucket') == '' ? '0' : '1');
+		$fields['unique_filename'] = ($this->get('unique_filename') == '' ? '0' : '1');
+		$fields['ssl_option'] = ($this->get('ssl_option') == '' ? '0' : '1');
 		$fields['validator'] = ($fields['validator'] == 'custom' ? NULL : $this->get('validator'));
 
 		Symphony::Database()->query("DELETE FROM `tbl_fields_".$this->handle()."` WHERE `field_id` = '$id' LIMIT 1");
@@ -429,13 +455,21 @@ class FieldS3Upload extends FieldUpload {
 	}	
 	
 	private function getUrl($file) {
+		$protocol = ($this->get('ssl_option') == true ? 'https://' : 'http://');
+		
 		if ($this->get('cname') == '') {
-			$url = "http://" . $this->get('bucket') . ".s3.amazonaws.com/" . $file;
+			$url = $protocol . $this->get('bucket') . ".s3.amazonaws.com/" . $file;
 		}
 		else {
-			$url = "http://" . $this->get('cname') . "/" . $file;
+			$url = $protocol . $this->get('cname') . "/" . $file;
 		}
 		return $url;
+	}
+	
+	private function getUniqueFilename($file) {
+		## since unix timestamp is 10 digits, the unique filename will be limited to ($crop+1+10) characters;
+		$crop  = '33';
+		return preg_replace("/(.*)(\.[^\.]+)/e", "substr('$1', 0, $crop).'-'.time().'$2'", $filename);		
 	}
 
 	public function createTable(){

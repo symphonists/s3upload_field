@@ -8,7 +8,7 @@
 		public function about() {
 			return array(
 				'name'			=> 'Field: Amazon S3 File Upload',
-				'version'		=> '0.6.3',
+				'version'		=> '0.6.4',
 				'release-date'	=> '2011-05-31',
 				'author'		=> array(
 					array(
@@ -75,10 +75,25 @@
 				`bucket` varchar(255) NOT NULL,
 				`cname` varchar(255),
 				`remove_from_bucket` tinyint(1) DEFAULT '1',
+				`unique_filename` tinyint(1) DEFAULT '1',
+				`ssl_option` tinyint(1) DEFAULT '0',
 				`validator` varchar(50),
 				PRIMARY KEY (`id`),
 				KEY `field_id` (`field_id`))"
 			);
+		}
+		
+		public function update($previousVersion) {
+			if(version_compare($previousVersion, '0.6.4', '<')) {
+				// Add new row:
+				Administration::instance()->Database->query(
+					"ALTER TABLE `tbl_fields_s3upload` ADD `unique_filename` tinyint(1) DEFAULT '1'"
+				);
+				Administration::instance()->Database->query(
+					"ALTER TABLE `tbl_fields_s3upload` ADD `ssl_option` tinyint(1) DEFAULT '0'"
+				);
+
+			}
 		}
 		
 		public function getAmazonS3AccessKeyId(){

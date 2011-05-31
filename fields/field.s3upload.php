@@ -468,7 +468,7 @@ class FieldS3Upload extends FieldUpload {
 	}
 	
 	private function getUniqueFilename(&$file) {
-		$file = preg_replace("/(.*)(\.[^\.]+)/e", "'$1' . uniqid() . '$2'", $file);
+		$file = preg_replace("/(.*)(\.[^\.]+)/e", "'$1-' . uniqid() . '$2'", $file);
 	}
 
 	public function createTable(){

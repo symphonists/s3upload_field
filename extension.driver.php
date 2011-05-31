@@ -47,15 +47,26 @@
 					$group->setAttribute('class', 'settings');
 					$group->appendChild(new XMLElement('legend', 'Amazon S3 Security Credentials'));
 
+					$div = new XMLElement('div', NULL, array('class' => 'group'));
+
 					$label = Widget::Label('Access Key ID');
 					$label->appendChild(Widget::Input('settings[s3upload_field][access-key-id]', General::Sanitize($this->getAmazonS3AccessKeyId())));		
-					$group->appendChild($label);
+					$div->appendChild($label);
 					
 					$label = Widget::Label('Secret Access Key');
 					$label->appendChild(Widget::Input('settings[s3upload_field][secret-access-key]', General::Sanitize($this->getAmazonS3SecretAccessKey())));		
-					$group->appendChild($label);
+					$div->appendChild($label);
+
+					$group->appendChild($div);
 
 					$group->appendChild(new XMLElement('p', 'Get a Access Key ID and Secret Access Key from the <a href="http://aws.amazon.com">Amazon Web Services site</a>.', array('class' => 'help')));
+
+
+					$label = Widget::Label('Default cache expiry time (in seconds)');
+					$label->appendChild(Widget::Input('settings[s3upload_field][cache-control]', General::Sanitize($this->getCacheControl())));		
+
+					$group->appendChild($label);
+					
 
 					$context['wrapper']->appendChild($group);
 
@@ -94,6 +105,12 @@
 				);
 
 			}
+		}
+		
+		public function getCacheControl() {
+			$val = Symphony::Configuration()->get('cache-control', 's3upload_field');
+			if ($val == '' || !preg_match('/^[\d]+$/', $val)) return '864000';
+			else return $val;			
 		}
 		
 		public function getAmazonS3AccessKeyId(){

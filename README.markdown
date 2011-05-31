@@ -38,6 +38,7 @@ ___0.6.4 - ST___
 - Properly removes old files when adding a new one
 - Added SSL option
 - Added Unique File option
+- Added Cache Control option in preferences, needs to be in seconds, defaults to 10 days
 
 ___0.6.3 - ST___
 

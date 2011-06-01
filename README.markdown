@@ -2,7 +2,7 @@
 
 - Version: 0.6.5
 - Author: Scott Tesoriere & Andrew Shooner & Brian Zerangue
-- Build Date: 2011-05-31
+- Build Date: 2011-06-01
 - Requirements: Symphony 2.2+
 
 ## Origin

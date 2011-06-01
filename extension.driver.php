@@ -25,7 +25,7 @@
 				'description'	=> 'Upload files to Amazon S3. Based on Brian Zerangue\'s version, based on Michael E\'s upload field.'
 			);
 		}
-		
+
 		public function getSubscribedDelegates(){
 					return array(
 						array(
@@ -40,8 +40,8 @@
 						),
 					);
 		}
-		
-		
+
+
 		public function appendPreferences($context){
 					$group = new XMLElement('fieldset');
 					$group->setAttribute('class', 'settings');
@@ -50,11 +50,11 @@
 					$div = new XMLElement('div', NULL, array('class' => 'group'));
 
 					$label = Widget::Label('Access Key ID');
-					$label->appendChild(Widget::Input('settings[s3upload_field][access-key-id]', General::Sanitize($this->getAmazonS3AccessKeyId())));		
+					$label->appendChild(Widget::Input('settings[s3upload_field][access-key-id]', General::Sanitize($this->getAmazonS3AccessKeyId())));
 					$div->appendChild($label);
-					
+
 					$label = Widget::Label('Secret Access Key');
-					$label->appendChild(Widget::Input('settings[s3upload_field][secret-access-key]', General::Sanitize($this->getAmazonS3SecretAccessKey())));		
+					$label->appendChild(Widget::Input('settings[s3upload_field][secret-access-key]', General::Sanitize($this->getAmazonS3SecretAccessKey()), 'password'));
 					$div->appendChild($label);
 
 					$group->appendChild($div);
@@ -63,10 +63,10 @@
 
 
 					$label = Widget::Label('Default cache expiry time (in seconds)');
-					$label->appendChild(Widget::Input('settings[s3upload_field][cache-control]', General::Sanitize($this->getCacheControl())));		
+					$label->appendChild(Widget::Input('settings[s3upload_field][cache-control]', General::Sanitize($this->getCacheControl())));
 
 					$group->appendChild($label);
-					
+
 
 					$context['wrapper']->appendChild($group);
 
@@ -76,7 +76,7 @@
 			$this->_Parent->Database->query("DROP TABLE `tbl_fields_s3upload`");
 			Symphony::Configuration()->remove('s3upload_field');
 			Administration::instance()->saveConfig();
-			
+
 		}
 
 		public function install() {
@@ -93,7 +93,7 @@
 				KEY `field_id` (`field_id`))"
 			);
 		}
-		
+
 		public function update($previousVersion) {
 			if(version_compare($previousVersion, '0.6.4', '<')) {
 				// Add new row:
@@ -106,17 +106,17 @@
 
 			}
 		}
-		
+
 		public function getCacheControl() {
 			$val = Symphony::Configuration()->get('cache-control', 's3upload_field');
 			if ($val == '' || !preg_match('/^[\d]+$/', $val)) return '864000';
-			else return $val;			
+			else return $val;
 		}
-		
+
 		public function getAmazonS3AccessKeyId(){
 			return Symphony::Configuration()->get('access-key-id', 's3upload_field');
 		}
-				
+
 		public function getAmazonS3SecretAccessKey(){
 			return Symphony::Configuration()->get('secret-access-key', 's3upload_field');
 		}

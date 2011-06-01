@@ -54,7 +54,7 @@
 					$div->appendChild($label);
 
 					$label = Widget::Label('Secret Access Key');
-					$label->appendChild(Widget::Input('settings[s3upload_field][secret-access-key]', General::Sanitize($this->getAmazonS3SecretAccessKey())));
+					$label->appendChild(Widget::Input('settings[s3upload_field][secret-access-key]', General::Sanitize($this->getAmazonS3SecretAccessKey()), 'password'));
 					$div->appendChild($label);
 
 					$group->appendChild($div);

@@ -1,6 +1,6 @@
 # Field: Amazon S3 File Upload
 
-- Version: 0.6.4
+- Version: 0.6.5
 - Author: Scott Tesoriere & Andrew Shooner & Brian Zerangue
 - Build Date: 2011-05-31
 - Requirements: Symphony 2.2+
@@ -32,6 +32,12 @@ This extension functions as a basic replacement for file uploads, allowing hosti
 
 
 ## Change Log
+
+___0.6.5 - ST___
+
+- Changed algorithm for generating unique filename id to the one provided by Michael
+- Merged secret key changes (to password input field)
+- Cache-control is now allowed to be null
 
 ___0.6.4 - ST___
 

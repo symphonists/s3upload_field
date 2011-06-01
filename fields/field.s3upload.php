@@ -204,6 +204,9 @@ class FieldS3Upload extends FieldUpload {
 		
 
 		## Upload the new file
+		$headers = array('Content-Type' => $data['type']);
+		if ($this->_driver->getCacheControl() != false) $headers['Cache-Control'] = "max-age=".$this->_driver->getCacheControl();
+		
 		try {
 			$this->S3->putObject(
 				$this->S3->inputResource(fopen($data['tmp_name'], 'rb'), filesize($data['tmp_name'])), 
@@ -211,10 +214,7 @@ class FieldS3Upload extends FieldUpload {
 				$data['name'], 
 				'public-read',
 				array(),
-				array(
-					'Content-Type' => $data['type'],
-					'Cache-Control' => "max-age=".$this->_driver->getCacheControl(),
-				)
+				$headers
 			);
 		}
 		catch (Exception $e) {
@@ -468,9 +468,11 @@ class FieldS3Upload extends FieldUpload {
 	}
 	
 	private function getUniqueFilename(&$file) {
-		$file = preg_replace("/(.*)(\.[^\.]+)/e", "'$1-' . uniqid() . '$2'", $file);
+	    ## since uniqid() is 13 bytes, the unique filename will be limited to ($crop+1+13) characters;
+	    $crop  = '30';
+	    $file = preg_replace("/(.*)(\.[^\.]+)/e", "substr('$1', 0, $crop).'-'.uniqid().'$2'", $file);
 	}
-
+	
 	public function createTable(){
 
 		return $this->Database->query(

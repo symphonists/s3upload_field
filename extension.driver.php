@@ -8,7 +8,7 @@
 		public function about() {
 			return array(
 				'name'			=> 'Field: Amazon S3 File Upload',
-				'version'		=> '0.6.4',
+				'version'		=> '0.6.5',
 				'release-date'	=> '2011-05-31',
 				'author'		=> array(
 					array(
@@ -109,7 +109,8 @@
 
 		public function getCacheControl() {
 			$val = Symphony::Configuration()->get('cache-control', 's3upload_field');
-			if ($val == '' || !preg_match('/^[\d]+$/', $val)) return '864000';
+			if (!preg_match('/^[\d]+$/', $val) && $val != '') return '864000';
+			elseif ($val == '') return false;
 			else return $val;
 		}
 

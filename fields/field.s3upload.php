@@ -183,11 +183,6 @@ class FieldS3Upload extends FieldUpload {
 
 		if ($this->get('unique_filename') == true && isset($data['name'])) $this->getUniqueFilename($data['name']);
 
-		if($simulate) return;
-
-
-		
-
 		// Editing an entry: Where we're uploading a new file and getting rid of the old one
 		if($entry_id){
 			$row = $this->Database->fetchRow(0, "SELECT * FROM `tbl_entries_data_".$this->get('id')."` WHERE `entry_id` = '$entry_id' LIMIT 1");

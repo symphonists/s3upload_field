@@ -97,10 +97,10 @@
 		public function update($previousVersion) {
 			if(version_compare($previousVersion, '0.6.4', '<')) {
 				// Add new row:
-				Administration::instance()->Database->query(
+				Symphony::Database()->query(
 					"ALTER TABLE `tbl_fields_s3upload` ADD `unique_filename` tinyint(1) DEFAULT '1'"
 				);
-				Administration::instance()->Database->query(
+				Symphony::Database()->query(
 					"ALTER TABLE `tbl_fields_s3upload` ADD `ssl_option` tinyint(1) DEFAULT '0'"
 				);
 

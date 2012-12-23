@@ -195,8 +195,8 @@ class FieldS3Upload extends FieldUpload {
 
 		if($data['error'] == UPLOAD_ERR_NO_FILE || $data['error'] != UPLOAD_ERR_OK) return;
 
-
-		
+		// Sanitize the filename
+		$data['name'] = Lang::createFilename($data['name']);
 
 		## Upload the new file
 		$headers = array('Content-Type' => $data['type']);

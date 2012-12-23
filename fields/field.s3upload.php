@@ -8,13 +8,12 @@ require_once(EXTENSIONS .'/s3upload_field/lib/S3.php');
 class FieldS3Upload extends FieldUpload {
 
 	private $S3;
-	public function __construct(&$parent){
-		parent::__construct($parent);
+	public function __construct(){
+		parent::__construct();
 		$this->_name = 'S3 Upload';
-		$this->_driver = $this->_engine->ExtensionManager->create('s3upload_field');
+		$this->_driver = Symphony::ExtensionManager()->create('s3upload_field');
 
 		$this->S3 = new S3($this->_driver->getAmazonS3AccessKeyId(), $this->_driver->getAmazonS3SecretAccessKey());
-
 
 	}
 

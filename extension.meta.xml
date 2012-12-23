@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<extension id="s3upload_field" status="released" xmlns="http://symphony-cms.com/schemas/extension/1.0">
+	
+	<name>S3Upload Field</name>
+
+	<description lang="en">Upload files to Amazon's S3 service</description>
+
+	<repo type="github">https://github.com/wjn/s3upload_field</repo>
+	
+	<types>
+		<type>Field</type>
+	</types>
+	
+	<authors>
+		<author>
+			<name github="wjn" symphony="wjnielsen" twitter="nielsendigital">Will Nielsen</name>
+			<email>will@nielsendigital.com</email>
+			<website>http://nielsendigital.com</website>
+		</author>
+	</authors>
+	
+	<releases>
+		<release version="0.6.5" date="2012-11-04" min="2.3.x" />
+	</releases>	
+		
+</extension>

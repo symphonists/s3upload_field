@@ -73,14 +73,14 @@
 				}
 
 		public function uninstall() {
-			$this->_Parent->Database->query("DROP TABLE `tbl_fields_s3upload`");
+			Symphony::Database()->query("DROP TABLE `tbl_fields_s3upload`");
 			Symphony::Configuration()->remove('s3upload_field');
 			Administration::instance()->saveConfig();
 
 		}
 
 		public function install() {
-			return $this->_Parent->Database->query("CREATE TABLE `tbl_fields_s3upload` (
+			return Symphony::Database()->query("CREATE TABLE `tbl_fields_s3upload` (
 				`id` int(11) unsigned NOT NULL auto_increment,
 				`field_id` int(11) unsigned NOT NULL,
 				`bucket` varchar(255) NOT NULL,
@@ -97,10 +97,10 @@
 		public function update($previousVersion) {
 			if(version_compare($previousVersion, '0.6.4', '<')) {
 				// Add new row:
-				Administration::instance()->Database->query(
+				Symphony::Database()->query(
 					"ALTER TABLE `tbl_fields_s3upload` ADD `unique_filename` tinyint(1) DEFAULT '1'"
 				);
-				Administration::instance()->Database->query(
+				Symphony::Database()->query(
 					"ALTER TABLE `tbl_fields_s3upload` ADD `ssl_option` tinyint(1) DEFAULT '0'"
 				);
 

@@ -469,7 +469,7 @@ class FieldS3Upload extends FieldUpload {
 	
 	public function createTable(){
 
-		return $this->Database->query(
+		return Symphony::Database()->query(
 		"CREATE TABLE IF NOT EXISTS `tbl_entries_data_" . $this->get('id') . "` (
 			`id` int(11) unsigned NOT NULL auto_increment,
 			`entry_id` int(11) unsigned NOT NULL,

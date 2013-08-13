@@ -138,7 +138,7 @@ class FieldS3Upload extends FieldUpload {
 
 	}
 
-	public function processRawFieldData($data, &$status, $simulate=false, $entry_id=NULL){
+	public function processRawFieldData($data, &$status, &$message=null, $simulate=false, $entry_id=NULL){
 
 		$status = self::__OK__;
 
@@ -184,7 +184,7 @@ class FieldS3Upload extends FieldUpload {
 
 		// Editing an entry: Where we're uploading a new file and getting rid of the old one
 		if($entry_id){
-			$row = $this->Database->fetchRow(0, "SELECT * FROM `tbl_entries_data_".$this->get('id')."` WHERE `entry_id` = '$entry_id' LIMIT 1");
+			$row = Symphony::Database()->fetchRow(0, "SELECT * FROM `tbl_entries_data_".$this->get('id')."` WHERE `entry_id` = '$entry_id' LIMIT 1");
 			$existing_file = $row['file'];
 			if ((!is_null($existing_file) && strtolower($existing_file) != strtolower($data['file'])) || ($data['error'] == UPLOAD_ERR_NO_FILE && !is_null($existing_file))) {
 				$this->S3->deleteObject($this->get('bucket'), basename($existing_file));
@@ -320,7 +320,7 @@ class FieldS3Upload extends FieldUpload {
 			return self::__INVALID_FIELDS__;	
 		}
 
-		if(empty($data) || $data['error'] == UPLOAD_ERR_NO_FILE) {
+		if(empty($data) || (isset($data['error']) && $data['error'] == UPLOAD_ERR_NO_FILE)) {
 
 
 			if($this->get('required') == 'yes'){
@@ -469,7 +469,7 @@ class FieldS3Upload extends FieldUpload {
 	
 	public function createTable(){
 
-		return $this->Database->query(
+		return Symphony::Database()->query(
 		"CREATE TABLE IF NOT EXISTS `tbl_entries_data_" . $this->get('id') . "` (
 			`id` int(11) unsigned NOT NULL auto_increment,
 			`entry_id` int(11) unsigned NOT NULL,

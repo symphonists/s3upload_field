@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<extension id="s3upload_field" status="released" xmlns="http://symphony-cms.com/schemas/extension/1.0">
+<extension id="s3upload_field" status="released" xmlns="http://www.getsymphony.com/schemas/extension/1.0">
 	
 	<name>S3Upload Field</name>
 
 	<description lang="en">Upload files to Amazon's S3 service</description>
 
-	<repo type="github">https://github.com/wjn/s3upload_field</repo>
+	<repo type="github">https://github.com/symphonists/s3upload_field</repo>
 	
 	<types>
 		<type>Field</type>
@@ -13,14 +13,24 @@
 	
 	<authors>
 		<author>
-			<name github="wjn" symphony="wjnielsen" twitter="nielsendigital">Will Nielsen</name>
-			<email>will@nielsendigital.com</email>
-			<website>http://nielsendigital.com</website>
+			<name github="symphonists">Symphonists</name>
 		</author>
 	</authors>
 	
 	<releases>
-		<release version="0.6.5" date="2012-11-04" min="2.3.x" />
+		<release version="0.7" date="2013-08-13" min="2.3.1">
+			- Fixed Database fields for Symphony 2.3 - twiro
+			- Fixed PHP 5.4 - korelogic
+		</release>
+		<release version="0.6.7" date="2012-11-04" min="2.2.5" max="2.3">
+			- Added extension.meta.xml - wjn
+		</release>
+		<release version="0.6.6" date="2011-11-26" min="2.2" max="2.2.3">
+			- Sanitize filename - michael-e
+		</release>
+		<release version="0.6.5" date="2012-11-04" min="2.2" max="2.2.3">
+			- Fixed uploads for Symphony 2.2.3
+		</release>
 	</releases>	
 		
 </extension>

@@ -1,6 +1,6 @@
 # Field: Amazon S3 File Upload
 
-- Version: 0.7
+- Version: 0.7.1
 - Author: Symphonists
 - Build Date: 2013-08-13
 - Requirements: Symphony 2.3.1 or higher
@@ -29,7 +29,11 @@ This extension functions as a basic replacement for file uploads, allowing hosti
 
 ## Change Log
 
-___0.7 - korelogic and twiro ___
+___0.7.1 - BZ ___
+
+- Fixed extension.meta.xml; added required symphony attribute for the author/name node.
+
+___0.7 - korelogic and twiro___
 
 - Added compatibility for Symphony 2.3.1 and PHP 5.4.x; Requirement: Symphony 2.3.1 or higher.
 

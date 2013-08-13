@@ -1,21 +1,17 @@
 # Field: Amazon S3 File Upload
 
-- Version: 0.6.6
-- Author: Scott Tesoriere & Andrew Shooner & Brian Zerangue
-- Build Date: 2011-06-01
-- Requirements: Symphony 2.2+
+- Version: 0.7
+- Author: Symphonists
+- Build Date: 2013-08-13
+- Requirements: Symphony 2.3.1 or higher
 
 ## Origin
 
-This extension is a variation of the 'Unique File Upload Field' extension by 
-Michael Eichelsdoerfer and the Akismet extension (for System Preferences) by 
-Alistair Kerney. It uses the Amazon S3 PHP class written by Donovan Schonknecht, http://undesigned.org.za/2007/10/22/amazon-s3-php-class.
-This extension was started by Brian Zerangue, taken over by Andrew Shooner, and some slight modifications to get it working with Symphony 2.2
-were made by Scott Tesoriere.
+This extension is a variation of the 'Unique File Upload Field' extension by Michael Eichelsdoerfer and the Akismet extension (for System Preferences) by  Alistair Kerney. It uses the Amazon S3 PHP class written by Donovan Schonknecht, http://undesigned.org.za/2007/10/22/amazon-s3-php-class. This extension was started by Brian Zerangue, taken over by Andrew Shooner, and some slight modifications to get it working with Symphony 2.2 were made by Scott Tesoriere.
 
 
 ## Overview
-This extension functions as a basic replacement for file uploads, allowing hosting on Amazon S3 (it requires an [Amazon S3 account](http://aws.amazon.com/s3/)). Uploaded files are world readable. It is not considered feature-complete; there is much additional functionality that could be added .If you have input, please contact Andrew Shooner [through email](ashooner@gmail.com) or at the Symphony forums. 
+This extension functions as a basic replacement for file uploads, allowing hosting on Amazon S3 (it requires an [Amazon S3 account](http://aws.amazon.com/s3/)). Uploaded files are world readable. It is not considered feature-complete; there is much additional functionality that could be added . If you have input, please contact us at the Symphony forum, at getsymphony.com. 
 
 
 ## Installation
@@ -33,8 +29,17 @@ This extension functions as a basic replacement for file uploads, allowing hosti
 
 ## Change Log
 
+___0.7 - korelogic and twiro ___
+
+- Added compatibility for Symphony 2.3.1 and PHP 5.4.x; Requirement: Symphony 2.3.1 or higher.
+
+___0.6.7 - WN___
+
+- Added extension.meta.xml, and added compatibility for Symphony 2.3 - wjn
+
 ___0.6.6 - ME___
 
+- Requirement: Symphony 2.2
 - Fix: Added sanitizing of filename upon uploading.
 
 ___0.6.5 - ST___

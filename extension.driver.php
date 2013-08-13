@@ -5,26 +5,6 @@
 
 	Class extension_s3upload_field extends Extension {
 
-		public function about() {
-			return array(
-				'name'			=> 'Field: Amazon S3 File Upload',
-				'version'		=> '0.6.6',
-				'release-date'	=> '2011-11-26',
-				'author'		=> array(
-					array(
-						'name'			=> 'Scott Tesoriere',
-						'website'		=> 'http://tesoriere.com',
-						'email'			=> 'scott@tesoriere.com'
-					),
-					array(
-						'name'			=> 'Andrew Shooner and Brian Zerangue',
-						'website'		=> 'http://andrewshooner.com',
-						'email'			=> 'ashooner@gmail.com'
-					),
-				),
-				'description'	=> 'Upload files to Amazon S3. Based on Brian Zerangue\'s version, based on Michael E\'s upload field.'
-			);
-		}
 
 		public function getSubscribedDelegates(){
 					return array(

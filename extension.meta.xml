@@ -1,36 +1,34 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <extension id="s3upload_field" status="released" xmlns="http://www.getsymphony.com/schemas/extension/1.0">
-	
 	<name>S3Upload Field</name>
-
 	<description lang="en">Upload files to Amazon's S3 service</description>
-
 	<repo type="github">https://github.com/symphonists/s3upload_field</repo>
-	
+	<url type="discuss">http://www.getsymphony.com/discuss/thread/46713/</url>
 	<types>
 		<type>Field</type>
+		<type>Third Party Integration</type>
 	</types>
-	
 	<authors>
 		<author>
-			<name github="symphonists">Symphonists</name>
+			<name github="symphonists" symphony="community">Symphony Community</name>
 		</author>
 	</authors>
-	
 	<releases>
-		<release version="0.7" date="2013-08-13" min="2.3.1">
-			- Fixed Database fields for Symphony 2.3 - twiro
-			- Fixed PHP 5.4 - korelogic
+		<release version="0.7.1" date="2013-08-13" min="2.3.1">
+			* Fixed extension.meta.xml; added required symphony attribute for the author/name node.
+		</release>
+		<release version="0.7.0" date="2013-08-13" min="2.3.1">
+			* Fixed Database fields for Symphony 2.3 - twiro
+			* Fixed PHP 5.4 - korelogic
 		</release>
 		<release version="0.6.7" date="2012-11-04" min="2.2.5" max="2.3">
-			- Added extension.meta.xml - wjn
+			* Added extension.meta.xml - wjn
 		</release>
 		<release version="0.6.6" date="2011-11-26" min="2.2" max="2.2.3">
-			- Sanitize filename - michael-e
+			* Sanitize filename - michael-e
 		</release>
 		<release version="0.6.5" date="2012-11-04" min="2.2" max="2.2.3">
-			- Fixed uploads for Symphony 2.2.3
+			* Fixed uploads for Symphony 2.2.3
 		</release>
 	</releases>	
-		
 </extension>

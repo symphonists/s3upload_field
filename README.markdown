@@ -1,8 +1,8 @@
 # Field: Amazon S3 File Upload
 
-- Version: 0.7.1
+- Version: 0.7.2
 - Author: Symphonists
-- Build Date: 2013-08-13
+- Build Date: 2013-09-07
 - Requirements: Symphony 2.3.1 or higher
 
 ## Origin
@@ -28,6 +28,10 @@ This extension functions as a basic replacement for file uploads, allowing hosti
 
 
 ## Change Log
+
+___0.7.2 - BZ ___
+
+- Fixed extension.meta.xml; Updated domain name in xmlns... removed www which caused conflicts.
 
 ___0.7.1 - BZ ___
 

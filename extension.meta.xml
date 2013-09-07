@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<extension id="s3upload_field" status="released" xmlns="http://www.getsymphony.com/schemas/extension/1.0">
+<extension id="s3upload_field" status="released" xmlns="http://getsymphony.com/schemas/extension/1.0">
 	<name>S3Upload Field</name>
 	<description lang="en">Upload files to Amazon's S3 service</description>
 	<repo type="github">https://github.com/symphonists/s3upload_field</repo>
-	<url type="discuss">http://www.getsymphony.com/discuss/thread/46713/</url>
+	<url type="discuss">http://getsymphony.com/discuss/thread/46713/</url>
 	<types>
 		<type>Field</type>
 		<type>Third Party Integration</type>
@@ -14,6 +14,9 @@
 		</author>
 	</authors>
 	<releases>
+		<release version="0.7.2" date="2013-09-07" min="2.3.1">
+			* Fixed extension.meta.xml; Updated domain name in xmlns... removed www which caused conflicts.
+		</release>
 		<release version="0.7.1" date="2013-08-13" min="2.3.1">
 			* Fixed extension.meta.xml; added required symphony attribute for the author/name node.
 		</release>

@@ -34,7 +34,7 @@ class FieldS3Upload extends FieldUpload {
 		$label = Widget::Label(__('Bucket'));
 
 		try {
-			$buckets = $this->S3->listBuckets();				
+			$buckets = $this->S3->listBuckets();
 		}
 		catch (Exception $e){
 		}
@@ -43,7 +43,7 @@ class FieldS3Upload extends FieldUpload {
 		if(!empty($buckets) && is_array($buckets)){
 			foreach($buckets as $b) {
 				$options[] = array($b, ($this->get('bucket') == $b), $b);
-			}	
+			}
 		}
 
 		$label->appendChild(Widget::Select('fields['.$this->get('sortorder').'][bucket]', $options));
@@ -52,17 +52,17 @@ class FieldS3Upload extends FieldUpload {
 
 
 		if(isset($errors['bucket'])) {
-			$div->appendChild(Widget::wrapFormElementWithError($label, $errors['bucket']));	
+			$div->appendChild(Widget::wrapFormElementWithError($label, $errors['bucket']));
 		}
 		else {
 			$div->appendChild($label);
-		}			
-		
+		}
+
 		$label = Widget::Label(__('CNAME'));
 		$label->appendChild(new XMLElement('i', __('Optional')));
 		$label->appendChild(Widget::Input('fields['.$this->get('sortorder').'][cname]', htmlspecialchars($this->get('cname'))));
 
-		
+
 		if (isset($errors['cname'])) {
 			$div->appendChild(Widget::wrapFormElementWithError($label, $errors['cname']));
 		}
@@ -70,7 +70,7 @@ class FieldS3Upload extends FieldUpload {
 			$div->appendChild($label);
 		}
 
-		
+
 		$wrapper->appendChild($div);
 
 		$div = new XMLElement('div', NULL, array('class' => 'group'));
@@ -118,7 +118,7 @@ class FieldS3Upload extends FieldUpload {
 
 		$label->appendChild($span);
 
-		if($flagWithError != NULL) $wrapper->appendChild(Widget::wrapFormElementWithError($label, $flagWithError));
+		if($flagWithError != NULL) $wrapper->appendChild(Widget::Error($label, $flagWithError));
 		else $wrapper->appendChild($label);
 
 	}
@@ -175,7 +175,7 @@ class FieldS3Upload extends FieldUpload {
 					$result = $row;
 				}
 			}
-			
+
 			return $result;
 		}
 
@@ -200,12 +200,12 @@ class FieldS3Upload extends FieldUpload {
 		## Upload the new file
 		$headers = array('Content-Type' => $data['type']);
 		if ($this->_driver->getCacheControl() != false) $headers['Cache-Control'] = "max-age=".$this->_driver->getCacheControl();
-		
+
 		try {
 			$this->S3->putObject(
-				$this->S3->inputResource(fopen($data['tmp_name'], 'rb'), filesize($data['tmp_name'])), 
-				$this->get('bucket'), 
-				$data['name'], 
+				$this->S3->inputResource(fopen($data['tmp_name'], 'rb'), filesize($data['tmp_name'])),
+				$this->get('bucket'),
+				$data['name'],
 				'public-read',
 				array(),
 				$headers
@@ -241,7 +241,7 @@ class FieldS3Upload extends FieldUpload {
 			);
 
 	}
-	
+
 	public function entryDataCleanup($entry_id, $data){
 		if ($this->get('remove_from_bucket') == true) {
 			try {
@@ -317,7 +317,7 @@ class FieldS3Upload extends FieldUpload {
 		}
 		catch (Exception $e) {
 			$message = __('The bucket %s doesn\'t exist! Please update this section.', array($this->get('bucket')));
-			return self::__INVALID_FIELDS__;	
+			return self::__INVALID_FIELDS__;
 		}
 
 		if(empty($data) || (isset($data['error']) && $data['error'] == UPLOAD_ERR_NO_FILE)) {
@@ -325,7 +325,7 @@ class FieldS3Upload extends FieldUpload {
 
 			if($this->get('required') == 'yes'){
 				$message = __("'%s' is a required field.", array($this->get('label')));
-				return self::__MISSING_FIELDS__;		
+				return self::__MISSING_FIELDS__;
 			}
 
 			return self::__OK__;
@@ -394,9 +394,9 @@ class FieldS3Upload extends FieldUpload {
 		$row = Symphony::Database()->fetchRow(0, "SELECT * FROM `tbl_entries_data_".$this->get('id')."` WHERE `file`='".$data['name']."'");
 		if (isset($row['file'])) {
 			$message = __('A file with the name %1$s already exists at that bucket. Please rename the file first, or choose another.', array($data['name']));
-			return self::__INVALID_FIELDS__;			
+			return self::__INVALID_FIELDS__;
 		}
-		return self::__OK__;		
+		return self::__OK__;
 
 	}
 
@@ -411,7 +411,7 @@ class FieldS3Upload extends FieldUpload {
 			));
 		$item->appendChild(new XMLElement('filename', General::sanitize(basename($data['file']))));
 		$item->appendChild(new XMLElement('size', $data['size']));
-		$item->appendChild(new XMLElement('mimetype', $data['mimetype']));		
+		$item->appendChild(new XMLElement('mimetype', $data['mimetype']));
 
 		$m = unserialize($data['meta']);
 
@@ -447,11 +447,11 @@ class FieldS3Upload extends FieldUpload {
 		Symphony::Database()->query("DELETE FROM `tbl_fields_".$this->handle()."` WHERE `field_id` = '$id' LIMIT 1");
 		return Symphony::Database()->insert($fields, 'tbl_fields_' . $this->handle());
 
-	}	
-	
+	}
+
 	private function getUrl($file) {
 		$protocol = ($this->get('ssl_option') == true ? 'https://' : 'http://');
-		
+
 		if ($this->get('cname') == '') {
 			$url = $protocol . $this->get('bucket') . ".s3.amazonaws.com/" . $file;
 		}
@@ -460,13 +460,13 @@ class FieldS3Upload extends FieldUpload {
 		}
 		return $url;
 	}
-	
+
 	private function getUniqueFilename(&$file) {
 	    ## since uniqid() is 13 bytes, the unique filename will be limited to ($crop+1+13) characters;
 	    $crop  = '30';
 	    $file = preg_replace("/(.*)(\.[^\.]+)/e", "substr('$1', 0, $crop).'-'.uniqid().'$2'", $file);
 	}
-	
+
 	public function createTable(){
 
 		return Symphony::Database()->query(

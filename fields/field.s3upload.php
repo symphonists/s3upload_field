@@ -52,7 +52,7 @@ class FieldS3Upload extends FieldUpload {
 
 
 		if(isset($errors['bucket'])) {
-			$div->appendChild(Widget::wrapFormElementWithError($label, $errors['bucket']));
+			$div->appendChild(Widget::Error($label, $errors['bucket']));
 		}
 		else {
 			$div->appendChild($label);
@@ -64,7 +64,7 @@ class FieldS3Upload extends FieldUpload {
 
 
 		if (isset($errors['cname'])) {
-			$div->appendChild(Widget::wrapFormElementWithError($label, $errors['cname']));
+			$div->appendChild(Widget::Error($label, $errors['cname']));
 		}
 		else {
 			$div->appendChild($label);

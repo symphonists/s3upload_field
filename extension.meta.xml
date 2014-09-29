@@ -14,7 +14,10 @@
 		</author>
 	</authors>
 	<releases>
-		<release version="0.8.0" date="2014-09-15" min="2.4" max="2.5.x">
+		<release version="0.8.1" date="2014-09-29" min="2.3.1" max="2.5.x">
+			* Fixed compatibility information in extension.meta.xml.
+		</release>
+		<release version="0.8.0" date="2014-09-15" min="2.3.1" max="2.5.x">
 			* Fixed extension.meta.xml; Removed deprecated Error calls.
 		</release>
 		<release version="0.7.2" date="2013-09-07" min="2.3.1">

@@ -371,6 +371,11 @@ class FieldS3Upload extends FieldUpload {
 	}
 
 	public function appendFormattedElement(XMLElement &$wrapper, $data, $encode = false, $mode = null, $entry_id = null) {
+		// It is possible an array of null data will be passed in. Check for this.
+		if (!is_array($data) || !isset($data['file']) || is_null($data['file'])) {
+			return;
+		}
+
 		$item = new XMLElement($this->get('element_name'));
 
 		$url = $this->getUrl($data['file']);

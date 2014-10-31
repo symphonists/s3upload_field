@@ -8,48 +8,45 @@ require_once(EXTENSIONS .'/s3upload_field/lib/S3.php');
 class FieldS3Upload extends FieldUpload {
 
 	private $S3;
+
 	public function __construct(){
 		parent::__construct();
 		$this->_name = 'S3 Upload';
 		$this->_driver = Symphony::ExtensionManager()->create('s3upload_field');
 
 		$this->S3 = new S3($this->_driver->getAmazonS3AccessKeyId(), $this->_driver->getAmazonS3SecretAccessKey());
-
 	}
 
-
-	public function displaySettingsPanel(&$wrapper, $errors = null) {
-		field::displaySettingsPanel($wrapper, $errors);
+	public function displaySettingsPanel(XMLElement &$wrapper, $errors = null) {
+		Field::displaySettingsPanel($wrapper, $errors);
+		$options = array();
 
 		// ## bucket Folder
 		// $ignore = array(
-		// 	'/workspace/events',
-		// 	'/workspace/data-sources',
-		// 	'/workspace/text-formatters',
-		// 	'/workspace/pages',
-		// 	'/workspace/utilities'
-		// 	);
+		//	'/workspace/events',
+		//	'/workspace/data-sources',
+		//	'/workspace/text-formatters',
+		//	'/workspace/pages',
+		//	'/workspace/utilities'
+		//	);
 		// $directories = General::listDirStructure(WORKSPACE, null, 'asc', DOCROOT, $ignore);
 
-		$label = Widget::Label(__('Bucket'));
+		$div = new XMLElement('div', NULL, array('class' => 'two columns'));
 
 		try {
 			$buckets = $this->S3->listBuckets();
-		}
-		catch (Exception $e){
-		}
 
-		$options = array();
-		if(!empty($buckets) && is_array($buckets)){
-			foreach($buckets as $b) {
-				$options[] = array($b, ($this->get('bucket') == $b), $b);
+			if(!empty($buckets) && is_array($buckets)){
+				foreach($buckets as $b) {
+					$options[] = array($b, ($this->get('bucket') == $b), $b);
+				}
 			}
 		}
+		catch (Exception $e){}
 
+		$label = Widget::Label(__('Bucket'));
+		$label->setAttribute('class', 'column');
 		$label->appendChild(Widget::Select('fields['.$this->get('sortorder').'][bucket]', $options));
-
-		$div = new XMLElement('div', NULL, array('class' => 'group'));
-
 
 		if(isset($errors['bucket'])) {
 			$div->appendChild(Widget::Error($label, $errors['bucket']));
@@ -59,9 +56,9 @@ class FieldS3Upload extends FieldUpload {
 		}
 
 		$label = Widget::Label(__('CNAME'));
+		$label->setAttribute('class', 'column');
 		$label->appendChild(new XMLElement('i', __('Optional')));
 		$label->appendChild(Widget::Input('fields['.$this->get('sortorder').'][cname]', htmlspecialchars($this->get('cname'))));
-
 
 		if (isset($errors['cname'])) {
 			$div->appendChild(Widget::Error($label, $errors['cname']));
@@ -70,41 +67,33 @@ class FieldS3Upload extends FieldUpload {
 			$div->appendChild($label);
 		}
 
-
 		$wrapper->appendChild($div);
-
-		$div = new XMLElement('div', NULL, array('class' => 'group'));
 
 		$this->buildValidationSelect($wrapper, $this->get('validator'), 'fields['.$this->get('sortorder').'][validator]', 'upload');
 
-		$setting = new XMLElement('label', '<input name="fields[' . $this->get('sortorder') . '][ssl_option]" value="1" type="checkbox"' . (($this->get('ssl_option') != 0 || $this->get('ssl_option') == null) ? ' checked="checked"' : '') . '/> ' . __('Build links using https://'));
+		$div = new XMLElement('div', NULL, array('class' => 'two columns'));
+		$setting = new XMLElement('label', '<input name="fields[' . $this->get('sortorder') . '][ssl_option]" value="1" type="checkbox"' . (($this->get('ssl_option') != 0 || $this->get('ssl_option') == null) ? ' checked="checked"' : '') . '/> ' . __('Build links using https://'), array('class' => 'column'));
 		$div->appendChild($setting);
 
-
-		$setting = new XMLElement('label', '<input name="fields[' . $this->get('sortorder') . '][unique_filename]" value="1" type="checkbox"' . (($this->get('unique_filename') != 0 || $this->get('unique_filename') == null) ? ' checked="checked"' : '') . '/> ' . __('Automatically give the files a unique filename'));
+		$setting = new XMLElement('label', '<input name="fields[' . $this->get('sortorder') . '][unique_filename]" value="1" type="checkbox"' . (($this->get('unique_filename') != 0 || $this->get('unique_filename') == null) ? ' checked="checked"' : '') . '/> ' . __('Automatically give the files a unique filename'), array('class' => 'column'));
 		$div->appendChild($setting);
-
 
 		$wrapper->appendChild($div);
-		$div = new XMLElement('div', NULL, array('class' => 'group'));
+		$div = new XMLElement('div', NULL, array('class' => 'two columns'));
 
-		$setting = new XMLElement('label', '<input name="fields[' . $this->get('sortorder') . '][remove_from_bucket]" value="1" type="checkbox"' . (($this->get('remove_from_bucket') != 0 || $this->get('remove_from_bucket') == null) ? ' checked="checked"' : '') . '/> ' . __('Remove file from S3 upon deletion of entry'));
+		$setting = new XMLElement('label', '<input name="fields[' . $this->get('sortorder') . '][remove_from_bucket]" value="1" type="checkbox"' . (($this->get('remove_from_bucket') != 0 || $this->get('remove_from_bucket') == null) ? ' checked="checked"' : '') . '/> ' . __('Remove file from S3 upon deletion of entry'), array('class' => 'column'));
 		$div->appendChild($setting);
 		$this->appendRequiredCheckbox($div);
 
 		$wrapper->appendChild($div);
-		$div = new XMLElement('div', NULL, array('class' => 'group'));
+		$div = new XMLElement('div', NULL, array('class' => 'two columns'));
 
 		$this->appendShowColumnCheckbox($div);
 
 		$wrapper->appendChild($div);
-
-
 	}
 
-	public function displayPublishPanel(&$wrapper, $data=NULL, $flagWithError=NULL, $fieldnamePrefix=NULL, $fieldnamePostfix=NULL){
-
-
+	public function displayPublishPanel(XMLElement &$wrapper, $data = null, $flagWithError = null, $fieldnamePrefix = null, $fieldnamePostfix = null, $entry_id = null) {
 		$label = Widget::Label($this->get('label'));
 		$class = 'file';
 		$label->setAttribute('class', $class);
@@ -120,7 +109,6 @@ class FieldS3Upload extends FieldUpload {
 
 		if($flagWithError != NULL) $wrapper->appendChild(Widget::Error($label, $flagWithError));
 		else $wrapper->appendChild($label);
-
 	}
 
 	public function prepareTableValue($data, XMLElement $link=NULL){
@@ -218,19 +206,15 @@ class FieldS3Upload extends FieldUpload {
 				'mimetype' => NULL,
 				'size' => NULL,
 				'meta' => NULL
-				);
+			);
 		}
 
 		$status = self::__OK__;
-
-
-
 
 		## If browser doesn't send MIME type (e.g. .flv in Safari)
 		if (strlen(trim($data['type'])) == 0){
 			$data['type'] = 'unknown';
 		}
-
 
 		// all we need is the path and name, the domain is abstracted depending on whether or not it has a cname
 		return array(
@@ -238,8 +222,7 @@ class FieldS3Upload extends FieldUpload {
 			'size' => $data['size'],
 			'mimetype' => $data['type'],
 			'meta' => serialize(parent::getMetaInfo($data['tmp_name'], $data['type']))
-			);
-
+		);
 	}
 
 	public function entryDataCleanup($entry_id, $data){
@@ -257,8 +240,6 @@ class FieldS3Upload extends FieldUpload {
 	}
 
 	public function checkFields(&$errors, $checkForDuplicates=true){
-
-
 		if(!is_array($errors)) $errors = array();
 		if($this->get('cname') != '' && !preg_match('/([.]+)/i',$this->get('cname'))) {
 			$errors['cname'] = __('This is an invalid CNAME. Don\'t include the protocol (http/s).');
@@ -270,7 +251,6 @@ class FieldS3Upload extends FieldUpload {
 		}
 
 		return Field::checkFields($errors, $checkForDuplicates);
-
 	}
 
 	function checkPostFieldData($data, &$message, $entry_id=NULL){
@@ -303,11 +283,11 @@ class FieldS3Upload extends FieldUpload {
 
 		//	Array
 		//	(
-			//	    [name] => filename.pdf
-			//	    [type] => application/pdf
-			//	    [tmp_name] => /tmp/php/phpYtdlCl
-			//	    [error] => 0
-			//	    [size] => 16214
+			//		[name] => filename.pdf
+			//		[type] => application/pdf
+			//		[tmp_name] => /tmp/php/phpYtdlCl
+			//		[error] => 0
+			//		[size] => 16214
 			//	)
 
 		$message = NULL;
@@ -321,8 +301,6 @@ class FieldS3Upload extends FieldUpload {
 		}
 
 		if(empty($data) || (isset($data['error']) && $data['error'] == UPLOAD_ERR_NO_FILE)) {
-
-
 			if($this->get('required') == 'yes'){
 				$message = __("'%s' is a required field.", array($this->get('label')));
 				return self::__MISSING_FIELDS__;
@@ -331,13 +309,8 @@ class FieldS3Upload extends FieldUpload {
 			return self::__OK__;
 		}
 
-
-
-
-
 		## Its not an array, so just retain the current data and return
 		if(!is_array($data)) return self::__OK__;
-
 
 		if($data['error'] != UPLOAD_ERR_NO_FILE && $data['error'] != UPLOAD_ERR_OK){
 
@@ -379,7 +352,6 @@ class FieldS3Upload extends FieldUpload {
 		## uniq the filename
 		if ($this->get('unique_filename') == true && isset($data['name'])) $this->getUniqueFilename($data['name']);
 
-
 		if($this->get('validator') != NULL){
 			$rule = $this->get('validator');
 
@@ -387,7 +359,6 @@ class FieldS3Upload extends FieldUpload {
 				$message = __("File chosen in '%s' does not match allowable file types for that field.", array($this->get('label')));
 				return self::__INVALID_FIELDS__;
 			}
-
 		}
 
 		## check if the file exists since we can't check directly through the s3 library, the file field is unique
@@ -397,18 +368,16 @@ class FieldS3Upload extends FieldUpload {
 			return self::__INVALID_FIELDS__;
 		}
 		return self::__OK__;
-
 	}
 
-	function appendFormattedElement(&$wrapper, $data){
+	public function appendFormattedElement(XMLElement &$wrapper, $data, $encode = false, $mode = null, $entry_id = null) {
 		$item = new XMLElement($this->get('element_name'));
-
 
 		$url = $this->getUrl($data['file']);
 
 		$item->setAttributeArray(array(
 			'url' => $url,
-			));
+		));
 		$item->appendChild(new XMLElement('filename', General::sanitize(basename($data['file']))));
 		$item->appendChild(new XMLElement('size', $data['size']));
 		$item->appendChild(new XMLElement('mimetype', $data['mimetype']));
@@ -422,10 +391,7 @@ class FieldS3Upload extends FieldUpload {
 		$wrapper->appendChild($item);
 	}
 
-
-
-	function commit(){
-
+	public function commit(){
 		if(!Field::commit()) return false;
 
 		$id = $this->get('id');
@@ -435,8 +401,6 @@ class FieldS3Upload extends FieldUpload {
 		$fields = array();
 
 		$fields['field_id'] = $id;
-
-
 		$fields['bucket'] = $this->get('bucket');
 		$fields['cname'] = $this->get('cname');
 		$fields['remove_from_bucket'] = ($this->get('remove_from_bucket') == '' ? '0' : '1');
@@ -444,9 +408,7 @@ class FieldS3Upload extends FieldUpload {
 		$fields['ssl_option'] = ($this->get('ssl_option') == '' ? '0' : '1');
 		$fields['validator'] = ($fields['validator'] == 'custom' ? NULL : $this->get('validator'));
 
-		Symphony::Database()->query("DELETE FROM `tbl_fields_".$this->handle()."` WHERE `field_id` = '$id' LIMIT 1");
-		return Symphony::Database()->insert($fields, 'tbl_fields_' . $this->handle());
-
+		return FieldManager::saveSettings($id, $fields);
 	}
 
 	private function getUrl($file) {
@@ -462,28 +424,26 @@ class FieldS3Upload extends FieldUpload {
 	}
 
 	private function getUniqueFilename(&$file) {
-	    ## since uniqid() is 13 bytes, the unique filename will be limited to ($crop+1+13) characters;
-	    $crop  = '30';
-	    $file = preg_replace("/(.*)(\.[^\.]+)/e", "substr('$1', 0, $crop).'-'.uniqid().'$2'", $file);
+		## since uniqid() is 13 bytes, the unique filename will be limited to ($crop+1+13) characters;
+		$crop  = '30';
+		$file = preg_replace("/(.*)(\.[^\.]+)/e", "substr('$1', 0, $crop).'-'.uniqid().'$2'", $file);
 	}
 
 	public function createTable(){
-
 		return Symphony::Database()->query(
 		"CREATE TABLE IF NOT EXISTS `tbl_entries_data_" . $this->get('id') . "` (
 			`id` int(11) unsigned NOT NULL auto_increment,
 			`entry_id` int(11) unsigned NOT NULL,
 			`file` varchar(255) default NULL,
 			`size` int(11) unsigned NULL,
-			`mimetype` varchar(50) default NULL,
+			`mimetype` varchar(255) default NULL,
 			`meta` varchar(255) default NULL,
-			PRIMARY KEY  (`id`),
+			PRIMARY KEY	 (`id`),
 			KEY `entry_id` (`entry_id`),
 			UNIQUE KEY `file` (`file`),
 			KEY `mimetype` (`mimetype`)
-			) ENGINE=MyISAM;"
-
-			);
+			) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;"
+		);
 	}
 
-	}
+}

@@ -25,7 +25,7 @@
 			Symphony::Database()->query("DROP TABLE `tbl_fields_s3upload`");
 			Symphony::Configuration()->remove('s3upload_field');
 
-			return Symphony::Configuration()-write();
+			return Symphony::Configuration()->write();
 		}
 
 		public function update($previousVersion) {

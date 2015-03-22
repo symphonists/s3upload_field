@@ -3,18 +3,19 @@
 if (!defined('__IN_SYMPHONY__')) die('<h2>Symphony Error</h2><p>You cannot directly access this file</p>');
 
 require_once(TOOLKIT . '/fields/field.upload.php');
-require_once(EXTENSIONS .'/s3upload_field/lib/S3.php');
+require_once(EXTENSIONS .'/s3upload_field/lib/class.s3Facade.php');
 
 class FieldS3Upload extends FieldUpload {
 
-	private $S3;
+	private $s3;
 
 	public function __construct(){
+	
 		parent::__construct();
 		$this->_name = 'S3 Upload';
 		$this->_driver = Symphony::ExtensionManager()->create('s3upload_field');
 
-		$this->S3 = new S3($this->_driver->getAmazonS3AccessKeyId(), $this->_driver->getAmazonS3SecretAccessKey());
+		$this->s3 = new S3Facade($this->_driver->getAmazonS3AccessKeyId(), $this->_driver->getAmazonS3SecretAccessKey());
 	}
 
 	public function displaySettingsPanel(XMLElement &$wrapper, $errors = null) {
@@ -34,11 +35,13 @@ class FieldS3Upload extends FieldUpload {
 		$div = new XMLElement('div', NULL, array('class' => 'two columns'));
 
 		try {
-			$buckets = $this->S3->listBuckets();
+			$buckets = $this->s3->listBuckets();
 
+			$options = array();
 			if(!empty($buckets) && is_array($buckets)){
 				foreach($buckets as $b) {
-					$options[] = array($b, ($this->get('bucket') == $b), $b);
+					$bucketName = $b['Name'];
+					$options[] = array($bucketName, ($this->get('bucket') == $bucketName), $bucketName);
 				}
 			}
 		}
@@ -175,7 +178,7 @@ class FieldS3Upload extends FieldUpload {
 			$row = Symphony::Database()->fetchRow(0, "SELECT * FROM `tbl_entries_data_".$this->get('id')."` WHERE `entry_id` = '$entry_id' LIMIT 1");
 			$existing_file = $row['file'];
 			if ((!is_null($existing_file) && strtolower($existing_file) != strtolower($data['file'])) || ($data['error'] == UPLOAD_ERR_NO_FILE && !is_null($existing_file))) {
-				$this->S3->deleteObject($this->get('bucket'), basename($existing_file));
+				$this->s3->deleteObject($this->get('bucket'), basename($existing_file));
 			}
 
 		}
@@ -186,17 +189,21 @@ class FieldS3Upload extends FieldUpload {
 		$data['name'] = Lang::createFilename($data['name']);
 
 		## Upload the new file
-		$headers = array('Content-Type' => $data['type']);
-		if ($this->_driver->getCacheControl() != false) $headers['Cache-Control'] = "max-age=".$this->_driver->getCacheControl();
+
+		$options = array(
+			'Acl' => 'public-read',
+			'ContentType' => $data['type']
+		);
+
+		if ($this->_driver->getCacheControl() != false)
+			$options['CacheControl'] = "max-age=".$this->_driver->getCacheControl();
 
 		try {
-			$this->S3->putObject(
-				$this->S3->inputResource(fopen($data['tmp_name'], 'rb'), filesize($data['tmp_name'])),
+			$this->s3->putObject(
 				$this->get('bucket'),
 				$data['name'],
-				'public-read',
-				array(),
-				$headers
+				$data['tmp_name'],
+				$options
 			);
 		}
 		catch (Exception $e) {
@@ -229,7 +236,7 @@ class FieldS3Upload extends FieldUpload {
 		if ($this->get('remove_from_bucket') == true) {
 			try {
 				if (!is_null($data['file']))
-					$this->S3->deleteObject($this->get('bucket'), basename($data['file']));
+					$this->s3->deleteObject($this->get('bucket'), basename($data['file']));
 			}
 			catch (Exception $e) {	;}
 		}
@@ -292,10 +299,8 @@ class FieldS3Upload extends FieldUpload {
 
 		$message = NULL;
 
-		try {
-			$this->S3->getBucket($this->get('bucket'));
-		}
-		catch (Exception $e) {
+		if ($this->s3->doesBucketExist($this->get('bucket')) == false) {
+			
 			$message = __('The bucket %s doesn\'t exist! Please update this section.', array($this->get('bucket')));
 			return self::__INVALID_FIELDS__;
 		}
@@ -420,7 +425,7 @@ class FieldS3Upload extends FieldUpload {
 		$protocol = ($this->get('ssl_option') == true ? 'https://' : 'http://');
 
 		if ($this->get('cname') == '') {
-			$url = $protocol . $this->get('bucket') . ".s3.amazonaws.com/" . $file;
+			$url = $protocol . "s3.amazonaws.com/" . $this->get('bucket') . "/" . $file;
 		}
 		else {
 			$url = $protocol . $this->get('cname') . "/" . $file;

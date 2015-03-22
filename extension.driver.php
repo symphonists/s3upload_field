@@ -1,7 +1,6 @@
 <?php
 
 	require_once(TOOLKIT . '/class.entrymanager.php');
-	require_once(EXTENSIONS .'/s3upload_field/lib/S3.php');
 
 	Class extension_s3upload_field extends Extension {
 

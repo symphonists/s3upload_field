@@ -435,15 +435,17 @@ class FieldS3Upload extends FieldUpload
         }
 
         $item = new XMLElement($this->get('element_name'));
-
         $url = $this->getUrl($data['file']);
+        $filesize = $data['size'];
 
         $item->setAttributeArray(array(
+            'size' =>   !is_null($filesize) ? General::formatFilesize($filesize) : 'unknown',
+            'bytes' => !is_null($filesize) ? $filesize : 'unknown',
             'url' => $url,
-            'bytes' => $data['size'],
             'type' => $data['mimetype']
         ));
         $item->appendChild(new XMLElement('filename', General::sanitize(basename($data['file']))));
+        // These are 'deprecated', should use the attributes
         $item->appendChild(new XMLElement('size', $data['size']));
         $item->appendChild(new XMLElement('mimetype', $data['mimetype']));
 

@@ -387,7 +387,7 @@ class FieldS3Upload extends FieldUpload
                 (!is_null($existing_file) && strtolower($existing_file) != strtolower($data['file']))
                 || ($data['error'] == UPLOAD_ERR_NO_FILE && !is_null($existing_file))
             ) {
-                $file_path = $this->getFullPath(basename($existing_file), $data['directory']);
+                $file_path = $this->getFullPath(basename($existing_file), $this->get('directory'));
                 $this->s3->deleteObject($this->get('bucket'), $file_path);
             }
         }
@@ -398,7 +398,7 @@ class FieldS3Upload extends FieldUpload
 
         // Sanitize the filename
         $data['name'] = Lang::createFilename($data['name']);
-        $upload_key = $this->getFullPath($data['name'], $data['directory']);
+        $upload_key = $this->getFullPath($data['name'], $this->get('directory'));
 
         ## Upload the new file
         $options = array(

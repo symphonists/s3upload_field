@@ -14,6 +14,7 @@
 					`unique_filename` tinyint(1) DEFAULT '1',
 					`ssl_option` tinyint(1) DEFAULT '0',
 					`validator` varchar(255),
+					`directory` varchar(255),
 					PRIMARY KEY (`id`),
 					KEY `field_id` (`field_id`)
 				) ENGINE=MyISAM	 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;"
@@ -35,6 +36,11 @@
 				);
 				Symphony::Database()->query(
 					"ALTER TABLE `tbl_fields_s3upload` ADD `ssl_option` tinyint(1) DEFAULT '0'"
+				);
+			}
+			if(version_compare($previousVersion, '0.10.0', '<')) {
+				Symphony::Database()->query(
+					"ALTER TABLE `tbl_fields_s3upload` ADD `directory` varchar(255)"
 				);
 			}
 		}

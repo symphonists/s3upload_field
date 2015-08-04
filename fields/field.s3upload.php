@@ -36,6 +36,7 @@ class FieldS3Upload extends FieldUpload
             `id` int(11) unsigned NOT NULL auto_increment,
             `entry_id` int(11) unsigned NOT NULL,
             `file` varchar(255) default NULL,
+            `directory` varchar(255) default NULL,
             `size` int(11) unsigned NULL,
             `mimetype` varchar(255) default NULL,
             `meta` varchar(255) default NULL,
@@ -69,12 +70,13 @@ class FieldS3Upload extends FieldUpload
     private function getUrl($file)
     {
         $protocol = ($this->get('ssl_option') == true ? 'https://' : 'http://');
+        $file_path = $this->getFullPath($file, $this->get('directory'));
 
         if ($this->get('cname') == '') {
-            $url = $protocol . "s3.amazonaws.com/" . $this->get('bucket') . "/" . $file;
+            $url = $protocol . "s3.amazonaws.com/" . $this->get('bucket') . "/" . $file_path;
         }
         else {
-            $url = $protocol . $this->get('cname') . "/" . $file;
+            $url = $protocol . $this->get('cname') . "/" . $file_path;
         }
         return $url;
     }
@@ -86,6 +88,12 @@ class FieldS3Upload extends FieldUpload
         $file = preg_replace("/(.*)(\.[^\.]+)/e", "substr('$1', 0, $crop).'-'.uniqid().'$2'", $file);
     }
 
+    private function getFullPath($file, $directory)
+    {
+        if (is_null($directory) || $directory == '') return $file;
+        return $directory . "/" . $file;
+    }
+
     /*-------------------------------------------------------------------------
         Settings:
     -------------------------------------------------------------------------*/
@@ -95,7 +103,7 @@ class FieldS3Upload extends FieldUpload
         Field::displaySettingsPanel($wrapper, $errors);
         $options = array();
 
-        $div = new XMLElement('div', NULL, array('class' => 'two columns'));
+        $div = new XMLElement('div', NULL, array('class' => 'three columns'));
 
         try {
             $buckets = $this->s3->listBuckets();
@@ -133,6 +141,17 @@ class FieldS3Upload extends FieldUpload
             $div->appendChild($label);
         }
 
+        $label = Widget::Label(__('Directory'));
+        $label->setAttribute('class', 'column');
+        $label->appendChild(new XMLElement('i', __('Optional')));
+        $label->appendChild(Widget::Input('fields['.$this->get('sortorder').'][directory]', htmlspecialchars($this->get('directory'))));
+
+        if (isset($errors['directory'])) {
+            $div->appendChild(Widget::Error($label, $errors['directory']));
+        } else {
+            $div->appendChild($label);
+        }
+
         $wrapper->appendChild($div);
 
         $this->buildValidationSelect($wrapper, $this->get('validator'), 'fields['.$this->get('sortorder').'][validator]', 'upload');
@@ -166,6 +185,10 @@ class FieldS3Upload extends FieldUpload
             $errors['cname'] = __('This is an invalid CNAME. Don\'t include the protocol (http/s).');
         }
 
+        if($this->get('directory') != '' && !preg_match('/^[a-zA-Z0-9\-_]+(\/[a-zA-Z0-9\-_]+)*$/', $this->get('directory'))) {
+            $errors['directory'] = __('Invalid directory name. Should be alphanumerics, underscores, hyphens with no leading or trailing slash.');
+        }
+
         // Check if a related section has been selected
         if($this->get('bucket') == '') {
             $errors['bucket'] = __('You have not setup your S3 Access keys yet. Please do so <a href="'.SYMPHONY_URL.'/system/preferences/">here</a>.');
@@ -191,6 +214,7 @@ class FieldS3Upload extends FieldUpload
         $fields['unique_filename'] = ($this->get('unique_filename') == '' ? '0' : '1');
         $fields['ssl_option'] = ($this->get('ssl_option') == '' ? '0' : '1');
         $fields['validator'] = ($fields['validator'] == 'custom' ? NULL : $this->get('validator'));
+        $fields['directory'] = $this->get('directory');
 
         return FieldManager::saveSettings($id, $fields);
     }
@@ -291,14 +315,15 @@ class FieldS3Upload extends FieldUpload
 
         ## check if the file exists since we can't check directly through the s3 library, the file field is unique
         $row = Symphony::Database()->fetchRow(0, sprintf("
-            SELECT * FROM `tbl_entries_data_%d` WHERE `file` = '%s'
+            SELECT * FROM `tbl_entries_data_%d` WHERE `file` = '%s' AND `directory` = '%s'
         ",
             $this->get('id'),
-            $data['name']
+            $data['name'],
+            $data['directory']
         ));
 
         if (isset($row['file'])) {
-            $message = __('A file with the name %1$s already exists at that bucket. Please rename the file first, or choose another.', array($data['name']));
+            $message = __('A file with the name %2$s/%1$s already exists at that bucket. Please rename the file first, or choose another.', array($data['name']), array($data['directory']));
             return self::__INVALID_FIELDS__;
         }
 
@@ -362,7 +387,8 @@ class FieldS3Upload extends FieldUpload
                 (!is_null($existing_file) && strtolower($existing_file) != strtolower($data['file']))
                 || ($data['error'] == UPLOAD_ERR_NO_FILE && !is_null($existing_file))
             ) {
-                $this->s3->deleteObject($this->get('bucket'), basename($existing_file));
+                $file_path = $this->getFullPath(basename($existing_file), $this->get('directory'));
+                $this->s3->deleteObject($this->get('bucket'), $file_path);
             }
         }
 
@@ -372,6 +398,7 @@ class FieldS3Upload extends FieldUpload
 
         // Sanitize the filename
         $data['name'] = Lang::createFilename($data['name']);
+        $upload_key = $this->getFullPath($data['name'], $this->get('directory'));
 
         ## Upload the new file
         $options = array(
@@ -386,7 +413,7 @@ class FieldS3Upload extends FieldUpload
         try {
             $this->s3->putObject(
                 $this->get('bucket'),
-                $data['name'],
+                $upload_key,
                 $data['tmp_name'],
                 $options
             );
@@ -396,7 +423,7 @@ class FieldS3Upload extends FieldUpload
             $message = __(
                 __('There was an error while trying to upload the file %s to the bucket %s.'),
                 array(
-                    '<code>' . $data['name'] . '</code>',
+                    '<code>' . $upload_key . '</code>',
                     '<code>'. $this->get('bucket') . '</code>'
                 )
             );

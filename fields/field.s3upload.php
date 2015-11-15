@@ -375,7 +375,7 @@ class FieldS3Upload extends FieldUpload
 
         ## Upload the new file
         $options = array(
-            'Acl' => 'public-read',
+            'ACL' => 'public-read',
             'ContentType' => $data['type']
         );
 

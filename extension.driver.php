@@ -27,7 +27,7 @@
 			return Symphony::Configuration()->write();
 		}
 
-		public function update($previousVersion) {
+		public function update($previousVersion = false) {
 			if(version_compare($previousVersion, '0.6.4', '<')) {
 				// Add new row:
 				Symphony::Database()->query(

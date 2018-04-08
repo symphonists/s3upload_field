@@ -51,17 +51,17 @@ class FieldS3Upload extends FieldUpload
         Utilities:
     -------------------------------------------------------------------------*/
 
-    public function entryDataCleanup($entry_id, $data)
+    public function entryDataCleanup($entry_id, $data = null)
     {
         if ($this->get('remove_from_bucket') == true) {
             try {
                 if (!is_null($data['file']))
                     $this->s3->deleteObject($this->get('bucket'), basename($data['file']));
             }
-            catch (Exception $e) {  ;}
+            catch (Exception $e) {  }
         }
 
-        Field::entryDataCleanup($entry_id);
+        Field::entryDataCleanup($entry_id, $data);
 
         return true;
     }
@@ -159,7 +159,7 @@ class FieldS3Upload extends FieldUpload
         $wrapper->appendChild($div);
     }
 
-    public function checkFields(&$errors, $checkForDuplicates=true)
+    public function checkFields(array &$errors, $checkForDuplicates=true)
     {
         if(!is_array($errors)) $errors = array();
         if($this->get('cname') != '' && !preg_match('/([.]+)/i',$this->get('cname'))) {

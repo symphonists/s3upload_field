@@ -1,52 +1,56 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <extension id="s3upload_field" status="released" xmlns="http://getsymphony.com/schemas/extension/1.0">
-	<name>S3Upload Field</name>
-	<description lang="en">Upload files to Amazon's S3 service</description>
-	<repo type="github">https://github.com/symphonists/s3upload_field</repo>
-	<url type="discuss">http://getsymphony.com/discuss/thread/46713/</url>
-	<types>
-		<type>Field</type>
-		<type>Third Party Integration</type>
-	</types>
-	<authors>
-		<author>
-			<name github="symphonists" symphony="community">Symphony Community</name>
-		</author>
-	</authors>
-	<releases>
-		<release version="0.9.0" date="2015-03-25" min="2.3.1" max="2.x.x">
-			* Fixed issues with SSL; added facade; replaced S3 logic
-			* Updated to AWS SDK Phar Version 2.7.23
-			* Update output to align with the core Upload Field
-			* Code style updates
-		</release>
-		<release version="0.8.2" date="2014-10-31" min="2.3.1" max="2.5.x">
-			* Fixed compatibility information in extension.meta.xml.
-		</release>
-		<release version="0.8.1" date="2014-09-29" min="2.3.1" max="2.5.x">
-			* Fixed compatibility information in extension.meta.xml.
-		</release>
-		<release version="0.8.0" date="2014-09-15" min="2.3.1" max="2.5.x">
-			* Fixed extension.meta.xml; Removed deprecated Error calls.
-		</release>
-		<release version="0.7.2" date="2013-09-07" min="2.3.1">
-			* Fixed extension.meta.xml; Updated domain name in xmlns... removed www which caused conflicts.
-		</release>
-		<release version="0.7.1" date="2013-08-13" min="2.3.1">
-			* Fixed extension.meta.xml; added required symphony attribute for the author/name node.
-		</release>
-		<release version="0.7.0" date="2013-08-13" min="2.3.1">
-			* Fixed Database fields for Symphony 2.3 - twiro
-			* Fixed PHP 5.4 - korelogic
-		</release>
-		<release version="0.6.7" date="2012-11-04" min="2.2.5" max="2.3">
-			* Added extension.meta.xml - wjn
-		</release>
-		<release version="0.6.6" date="2011-11-26" min="2.2" max="2.2.3">
-			* Sanitize filename - michael-e
-		</release>
-		<release version="0.6.5" date="2012-11-04" min="2.2" max="2.2.3">
-			* Fixed uploads for Symphony 2.2.3
-		</release>
-	</releases>	
+    <name>S3Upload Field</name>
+    <description lang="en">Upload files to Amazon's S3 service</description>
+    <repo type="github">https://github.com/symphonists/s3upload_field</repo>
+    <url type="discuss">http://getsymphony.com/discuss/thread/46713/</url>
+    <types>
+        <type>Field</type>
+        <type>Third Party Integration</type>
+    </types>
+    <authors>
+        <author>
+            <name github="symphonists" symphony="community">Symphony Community</name>
+        </author>
+    </authors>
+    <releases>
+        <release version="0.9.1" date="2018-04-08" min="2.3.1" max="2.x.x">
+            * Fixed PHP strict warning for PHP 7 compatibility
+            * Fixed public-read ACL issues
+        </release>
+        <release version="0.9.0" date="2015-03-25" min="2.3.1" max="2.x.x">
+            * Fixed issues with SSL; added facade; replaced S3 logic
+            * Updated to AWS SDK Phar Version 2.7.23
+            * Update output to align with the core Upload Field
+            * Code style updates
+        </release>
+        <release version="0.8.2" date="2014-10-31" min="2.3.1" max="2.5.x">
+            * Fixed compatibility information in extension.meta.xml.
+        </release>
+        <release version="0.8.1" date="2014-09-29" min="2.3.1" max="2.5.x">
+            * Fixed compatibility information in extension.meta.xml.
+        </release>
+        <release version="0.8.0" date="2014-09-15" min="2.3.1" max="2.5.x">
+            * Fixed extension.meta.xml; Removed deprecated Error calls.
+        </release>
+        <release version="0.7.2" date="2013-09-07" min="2.3.1">
+            * Fixed extension.meta.xml; Updated domain name in xmlns... removed www which caused conflicts.
+        </release>
+        <release version="0.7.1" date="2013-08-13" min="2.3.1">
+            * Fixed extension.meta.xml; added required symphony attribute for the author/name node.
+        </release>
+        <release version="0.7.0" date="2013-08-13" min="2.3.1">
+            * Fixed Database fields for Symphony 2.3 - twiro
+            * Fixed PHP 5.4 - korelogic
+        </release>
+        <release version="0.6.7" date="2012-11-04" min="2.2.5" max="2.3">
+            * Added extension.meta.xml - wjn
+        </release>
+        <release version="0.6.6" date="2011-11-26" min="2.2" max="2.2.3">
+            * Sanitize filename - michael-e
+        </release>
+        <release version="0.6.5" date="2012-11-04" min="2.2" max="2.2.3">
+            * Fixed uploads for Symphony 2.2.3
+        </release>
+    </releases>
 </extension>

@@ -83,7 +83,9 @@ class FieldS3Upload extends FieldUpload
     {
         ## since uniqid() is 13 bytes, the unique filename will be limited to ($crop+1+13) characters;
         $crop  = '30';
-        $file = preg_replace("/(.*)(\.[^\.]+)/e", "substr('$1', 0, $crop).'-'.uniqid().'$2'", $file);
+        $file = preg_replace_callback("/(.*)(\.[^\.]+)/", function ($matches) {
+            return substr($matches[1], 0, $crop) . '-' . uniqid() . $matches[2];
+        }, $file);
     }
 
     /*-------------------------------------------------------------------------

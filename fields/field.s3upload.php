@@ -71,7 +71,7 @@ class FieldS3Upload extends FieldUpload
         $protocol = ($this->get('ssl_option') == true ? 'https://' : 'http://');
 
         if ($this->get('cname') == '') {
-            $url = $protocol . "s3.amazonaws.com/" . $this->get('bucket') . "/" . $file;
+            $url = $protocol . $this->get('bucket') . ".s3.amazonaws.com/" . $file;
         }
         else {
             $url = $protocol . $this->get('cname') . "/" . $file;

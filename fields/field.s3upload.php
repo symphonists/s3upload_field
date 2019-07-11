@@ -224,12 +224,6 @@ class FieldS3Upload extends FieldUpload
     {
         $message = NULL;
 
-        if ($this->s3->doesBucketExist($this->get('bucket')) == false) {
-
-            $message = __('The bucket %s doesn\'t exist! Please update this section.', array($this->get('bucket')));
-            return self::__INVALID_FIELDS__;
-        }
-
         if(empty($data) || (isset($data['error']) && $data['error'] == UPLOAD_ERR_NO_FILE)) {
             if($this->get('required') == 'yes'){
                 $message = __("'%s' is a required field.", array($this->get('label')));
@@ -241,6 +235,12 @@ class FieldS3Upload extends FieldUpload
 
         ## Its not an array, so just retain the current data and return
         if(!is_array($data)) return self::__OK__;
+
+        if ($this->s3->doesBucketExist($this->get('bucket')) == false) {
+
+            $message = __('The bucket %s doesn\'t exist! Please update this section.', array($this->get('bucket')));
+            return self::__INVALID_FIELDS__;
+        }
 
         if($data['error'] != UPLOAD_ERR_NO_FILE && $data['error'] != UPLOAD_ERR_OK){
 
